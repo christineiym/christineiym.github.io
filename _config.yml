@@ -1,27 +1,35 @@
-baseurl: /christineiym.github.io
-title: ""
-subtitle: Content-centric blogging
-author: christine
-simple_search: http://google.com/search
-description: A Jekyll theme for content-rich sites
-name: tufte
+# site settings
+title: Christine Mendoza
+subtitle: Programmer, researcher, poet.
+email: mendoza@unc.edu
+description: About me.
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: # the base hostname & protocol for your site
+author: christineiym
+city: Chapel Hill
+state: NC
+country: United States of America
+
+# homepage tiles
+tiles-source: pages # accepts "posts" or "pages"
+tiles-count: 6
+
+# social settings (key must match name of font awesome icon)
+# see https://fontawesome.com/icons?d=gallery&p=2&s=brands
+# Icons are not shown if value is empty
+# You need to restart jekyll for changes to have an effect
+socials:
+  GitHub: https://github.com/christineiym
+  LinkedIn: https://www.linkedin.com/in/christine-i-mendoza/
+
+# build settings
 markdown: kramdown
-markdown_ext: "markdown,mkdown,mkdn,mkd,md"
-permalink: /articles/:short_year/:title
-timezone: America/New_York
-excerpt_separator: <!--more-->  # you can specify your own separator, of course.
-exclude: ['Gemfile', 'Gemfile.lock', 'Rakefile', 'UploadToGithub.Rakefile', 'README.md']
-post:
-  template: _post.txt
-  extension: md
-page:
-  template: _page.txt
-  extension: md
-editor: gvim
-git:
-  branch: main
-transfer:
-  command: rsync
-  settings: -av
-  source: _site/
-  destination: ~/Git/christineiym.github.com/
+
+sass:
+  style: compressed
+
+exclude:
+- "*.gemspec"
+- LICENSE.md
+- CONTRIBUTING.md
+- README.md 

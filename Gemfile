@@ -1,4 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'jekyll', "~> 3.8.5"
-gem 'rouge'
+gem 'jekyll', '~> 4.2'
+
+group :jekyll_plugins do
+  gem 'jekyll-timeago', '~> 0.13.1'
+end
