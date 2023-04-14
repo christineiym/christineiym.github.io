@@ -28,6 +28,7 @@
                     {% for page in site.html_pages %}
                     {% if page.layout != "home" and page.nav-menu == true %}
                     <li><a href="{{ page.url | absolute_url }}" class="button">{{ page.title }}</a></li>
+                    <br>
                     {% endif %}
                     {% endfor %}
                 </ul>
