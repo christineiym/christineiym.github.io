@@ -1,6 +1,6 @@
 ---
 title: Poetry
-layout: post
+layout: page
 url: https://sites.google.com/view/castlesintheair/home
 description: I maintain a website of personal poetry called 'Castles in the Air'.
 image: assets/images/pic07.jpg
