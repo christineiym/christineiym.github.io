@@ -20,19 +20,32 @@
             </header>
             <div class="content">
                 <ul class="actions">
-                    <li><a href="#one" class="button next scrolly">Some things about me</a></li>
+                    {% for page in site.pages %}
+                    {% if page.layout == "home" %}
+                    <li><a href="{{ "" | absolute_url }}/">{{ page.title }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% for page in site.html_pages %}
+                    {% if page.layout != "home" and page.nav-menu == true %}
+                    <li><a href="{{ page.url | absolute_url }}">{{ page.title }}</a></li>
+                    {% endif %}
+                    {% endfor %}
                 </ul>
             </div>
+            <ul class="links">
+                {% for page in site.pages %}
+                {% if page.layout == "home" %}
+                <li><a href="{{ "" | absolute_url }}/">{{ page.title }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% for page in site.html_pages %}
+                {% if page.layout != "home" and page.nav-menu == true %}
+                <li><a href="{{ page.url | absolute_url }}">{{ page.title }}</a></li>
+                {% endif %}
+                {% endfor %}
+            </ul>
         </div>
     </section>
-
-    <!-- Main -->
-    <div id="main">
-
-        <!-- One -->
-        {% include tiles.html %}
-
-    </div>
 
     {% include footer.html %}
 
