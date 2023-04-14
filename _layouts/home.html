@@ -18,22 +18,22 @@
             <header class="major">
                 <h1>Hello! I'm Christine.</h1>
             </header>
-        </div>
-        <div class="content">
-            <ul class="actions">
-                <!-- {% for page in site.pages %}
-                {% if page.layout == "home" %}
-                <li><a href="{{ "" | absolute_url }}/" class="button">{{ page.title }}</a></li>
-                {% endif %}
-                {% endfor %} -->
-                {% for page in site.html_pages %}
-                {% if page.layout != "home" and page.nav-menu == true %}
-                <li><a href="{{ page.url | absolute_url }}" class="button">{{ page.title }}</a></li>
-                <br>
-                <br>
-                {% endif %}
-                {% endfor %}
-            </ul>
+            <div class="content">
+                <ul class="actions">
+                    <!-- {% for page in site.pages %}
+                    {% if page.layout == "home" %}
+                    <li><a href="{{ "" | absolute_url }}/" class="button">{{ page.title }}</a></li>
+                    {% endif %}
+                    {% endfor %} -->
+                    {% for page in site.html_pages %}
+                    {% if page.layout != "home" and page.nav-menu == true %}
+                    <li><a href="{{ page.url | absolute_url }}" class="button">{{ page.title }}</a></li>
+                    <br>
+                    <br>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </section>
 
