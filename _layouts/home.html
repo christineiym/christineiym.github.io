@@ -20,11 +20,11 @@
             </header>
             <div class="content">
                 <ul class="actions">
-                    {% for page in site.pages %}
+                    <!-- {% for page in site.pages %}
                     {% if page.layout == "home" %}
                     <li><a href="{{ "" | absolute_url }}/" class="button">{{ page.title }}</a></li>
                     {% endif %}
-                    {% endfor %}
+                    {% endfor %} -->
                     {% for page in site.html_pages %}
                     {% if page.layout != "home" and page.nav-menu == true %}
                     <li><a href="{{ page.url | absolute_url }}" class="button">{{ page.title }}</a></li>
