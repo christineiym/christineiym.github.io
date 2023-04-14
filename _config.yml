@@ -22,6 +22,7 @@ socials:
   Envelope: mailto:{{ site.email }}
   GitHub: https://github.com/christineiym
   LinkedIn: https://www.linkedin.com/in/christine-i-mendoza/
+  Reddit: https://www.reddit.com/user/ChristineMendoza
 
 # build settings
 markdown: kramdown
