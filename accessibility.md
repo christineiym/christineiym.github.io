@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Research
-description: 'Lorem ipsum dolor sit amet nullam consequa<br />sed veroeros. tempus adipiscing nulla.'
+title: Accessibility
+description: Research
 image: assets/images/pic07.jpg
 nav-menu: true
 ---
