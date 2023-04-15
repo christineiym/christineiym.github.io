@@ -12,7 +12,9 @@ nav-menu: true
 <!-- One -->
 <section id="one" class="spotlights">
 	<section>
-		<img src="{% link assets/images/e_and_t_p2p.jpg %}" alt="" data-position="center center" />
+    	<a href="generic.html" class="image">
+			<img src="{% link assets/images/e_and_t_p2p.jpg %}" alt="" data-position="center center" />
+		</a>
 		<div class="content">
 			<div class="inner">
 				<header class="major">
@@ -21,23 +23,23 @@ nav-menu: true
 				<p>A brief study on undergraduate learning assistantships. Presented as part of the UNC Center for Faculty Excellence 2023 <a href="https://cfe.unc.edu/teaching-and-learning/learn-from-others/faculty-showcase/">Faculty Showcase on Teaching.</a></p>
 				<ul class="actions">
 					<li><a href="{% link assets/pdfs/Mendoza_Peer-to-Pear-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
-                    <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pptx">Presentation (PPTX)</a></li>
+                    <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pptx" class="button">Presentation (PPTX)</a></li>
 				</ul>
 			</div>
 		</div>
 	</section>
 	<section>
 		<a href="generic.html" class="image">
-			<img src="{% link assets/images/pic09.jpg %}" alt="" data-position="top center" />
+			<img src="{% link assets/images/e_and_t_mlc.jpeg %}" alt="" data-position="top center" />
 		</a>
 		<div class="content">
 			<div class="inner">
 				<header class="major">
-					<h3>Models of Language and Computation <i>(1.2023 - Present)</i></h3>
+					<h3>YouTube Series: Models of Language and Computation <i>(1.2023 - Present)</i></h3>
 				</header>
-				<p>A YouTube series intdended.</p>
+				<p>A YouTube playlist intended to supplement content for COMP455: Models of Language and Computation by diving deeper into real-life applications.</p>
 				<ul class="actions">
-					<li><a href="https://github.com/polaris-maps" class="button">GitHub Organization</a></li>
+					<li><a href="https://youtube.com/playlist?list=PLh1XP0sUat7nhZb4B0PwOgEmBneaCcWoz" class="button">Playlist</a></li>
 				</ul>
 			</div>
 		</div>
@@ -49,7 +51,7 @@ nav-menu: true
 <section id="two" class="spotlights">
     <section>
 		<a href="generic.html" class="image">
-			<img src="{% link assets/images/pic09.jpg %}" alt="" data-position="top center" />
+			<img src="{% link assets/images/e_and_t_evaas.png %}" alt="" data-position="top center" />
 		</a>
 		<div class="content">
 			<div class="inner">
@@ -62,7 +64,7 @@ nav-menu: true
 	</section>
 	<section>
 		<a href="generic.html" class="image">
-			<img src="{% link assets/images/pic08.jpg %}" alt="" data-position="center center" />
+			<img src="{% link assets/images/e_and_t_vfl.jpeg %}" alt="" data-position="center center" />
 		</a>
 		<div class="content">
 			<div class="inner">
