@@ -12,3 +12,5 @@ While at Central Piedmont, I was blessed to have been introduced to STEM researc
 in Science to connect students to STEM research opportunities and mentoring.
 
 This passion followed me into my time at the University of North Carolina at Chapel Hill, where I chose to double major in Computer Science (B.S.) and in Public Health (Nutrition Research and Science).
+
+<!-- Explain how I got into activities; link cv and/or research statement, resume -->

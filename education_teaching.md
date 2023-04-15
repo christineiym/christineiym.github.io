@@ -22,7 +22,7 @@ nav-menu: true
 				</header>
 				<p>A brief study on undergraduate learning assistantships. Presented as part of the UNC Center for Faculty Excellence 2023 <a href="https://cfe.unc.edu/teaching-and-learning/learn-from-others/faculty-showcase/">Faculty Showcase on Teaching.</a></p>
 				<ul class="actions">
-					<li><a href="{% link assets/pdfs/Mendoza_Peer-to-Pear-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
+					<li><a href="{% link assets/pdfs/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
                     <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pptx" class="button">Presentation (PPTX)</a></li>
 				</ul>
 			</div>
@@ -58,7 +58,8 @@ nav-menu: true
 				<header class="major">
 					<h3>Language-Agnostic Code Generator <i>(5.2022 - 1.2023)</i></h3>
 				</header>
-				<p>A prototype application for automatically generating custom scripts. Aimed to provide language-agnostic code templating, filling a gap made by existing code-generating tools (which focus on producing HTML/CSS/JS and require knowledge of specialized syntax)</p>
+				<p>A prototype application for automatically generating custom scripts. Aimed to provide language-agnostic code templating, filling a gap made by existing code-generating tools (which focus on producing HTML/CSS/JS and require knowledge of specialized syntax).</p>
+                <!-- Detail SAS Internship -->
 			</div>
 		</div>
 	</section>
@@ -78,6 +79,7 @@ nav-menu: true
                 <ul class="actions">
 					<li><a href="{% link assets/pdfs/Mendoza_Public_VFL_Project_Summary.pdf %}" class="button">Repository (Login Required)</a></li>
 				</ul>
+                <!-- Link to GAP / explain free login -->
 			</div>
 		</div>
 	</section>
