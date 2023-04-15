@@ -12,9 +12,7 @@ nav-menu: true
 <!-- One -->
 <section id="one" class="spotlights">
 	<section>
-		<a href="generic.html" class="image">
-			<img src="{% link assets/images/pic08.jpg %}" alt="" data-position="center center" />
-		</a>
+		<img src="{% link assets/images/e_and_t_p2p.jpg %}" alt="" data-position="center center" />
 		<div class="content">
 			<div class="inner">
 				<header class="major">
@@ -23,7 +21,7 @@ nav-menu: true
 				<p>A brief study on undergraduate learning assistantships. Presented as part of the UNC Center for Faculty Excellence 2023 <a href="https://cfe.unc.edu/teaching-and-learning/learn-from-others/faculty-showcase/">Faculty Showcase on Teaching.</a></p>
 				<ul class="actions">
 					<li><a href="{% link assets/pdfs/Mendoza_Peer-to-Pear-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
-                    <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Pear-Learning-The-ULA-Perspective.pptx">Presentation (PPTX)</a></li>
+                    <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pptx">Presentation (PPTX)</a></li>
 				</ul>
 			</div>
 		</div>
