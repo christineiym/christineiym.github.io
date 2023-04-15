@@ -2,7 +2,6 @@
 layout: post
 title: Accessibility
 description: Research
-image: assets/images/pic07.jpg
 nav-menu: true
 ---
 
@@ -22,7 +21,7 @@ nav-menu: true
 				</header>
 				<p>I will be researching accessibility under the direction of Dr. Anat Caspi of the University of Washington.</p>
 				<ul class="actions">
-					<li><a href="generic.html" class="button">Blog</a></li>
+					<li><a href="https://christineiym.github.io/dreu-site/" class="button">Blog</a></li>
 				</ul>
 			</div>
 		</div>
@@ -51,11 +50,30 @@ nav-menu: true
 		<div class="content">
 			<div class="inner">
 				<header class="major">
-					<h3>Sed nunc ligula</h3>
+					<h3>Project Open<i>(Research Assistant, 8.2022 - 12.2022)</i></h3>
 				</header>
-				<p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis tempus.</p>
+                <p>An initiative of the <a href="https://www.med.unc.edu/healthsciences/clds">Center for Literacy and Disability Studies</a> at UNC Chapel Hill. As research assistant for Project Open under the direction of <a href="https://www.cs.unc.edu/~gb/">Dr. Gary Bishop</a> (Department of Computer Science, UNC Chapel Hill), I contributed to the development and documentation of the Open-Source Design and Programmer Interface (OS-DPI), a tool to enable researchers to better design augmentative and alternative communication interfaces for people with difficulties in natural speech or typing.</p>
 				<ul class="actions">
-					<li><a href="generic.html" class="button">Learn more</a></li>
+					<li><a href="https://github.com/gbishop/OS-DPI" class="button">OS-DPI GitHub Repository</a></li>
+                    <li><a href="https://github.com/christineiym/OS-DPI/wiki/OS-DPI-Developer-Documentation" class="button">OS-DPI Developer's Documentation</a></li>
+                    <li><a href="https://project-openaac.com/" class="button">Project Open</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+    <section>
+		<a href="generic.html" class="image">
+			<img src="{% link assets/images/pic11.jpg %}" alt="" data-position="25% 25%" />
+		</a>
+		<div class="content">
+			<div class="inner">
+				<header class="major">
+					<h3>Digitized Early Literacy Alternate Assessment System<i>(3.2021 - 1.2022)</i></h3>
+				</header>
+				<p>A prototype of an open-source Google Drive extension to automate the creation of student progress reports by teachers of K-6 students with developmental and intellectual disabilities in the State of Iowa. This project was undertaken under the mentorship of Dr. Gary Bishop and Dr. Karen Erickson (Director, Center for Literacy and Disability Studies).</p>
+				<ul class="actions">
+					<li><a href="https://github.com/christineiym/digitizing-elaa" class="button">Project GitHub Repository</a></li>
+                    <li><a href="https://educateiowa.gov/sites/default/files/documents/Dynamic%20Learning%20Maps%20%28DLM%29%20Aligned%20K-6%20Early%20Literacy%20Alternate%20Assessment%20Iowa%20Manual.pdf">Early Literacy Alternate Assessment System</a></li>
 				</ul>
 			</div>
 		</div>
