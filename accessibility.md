@@ -36,6 +36,7 @@ nav-menu: true
 					<h3>Luminary <i>(12.2021 - Present)</i></h3>
 				</header>
 				<p> A collaborative, user-centered, student-volunteer-staffed, open-source initiative started in 2021 that aims to address the knowledge barriers around campus route-finding by crowdsourcing information on obstacles to suggest routes to rooms customized to the needs of the specific user.</p>
+                <p><i>Invited Talks:</i>SAS Institute Accessibility Exchange, July 2022</p>
 				<ul class="actions">
                     <li><a href="https://docs.google.com/presentation/d/1D7z0PFlWrLBKqIl4NDVLWi8eKbG7dHSm/edit?usp=sharing&ouid=105001790425137081021&rtpof=true&sd=true" class="button">Project Overview</a></li>
 					<li><a href="https://github.com/polaris-maps" class="button">GitHub Organization</a></li>

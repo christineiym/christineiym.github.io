@@ -6,8 +6,45 @@ image: assets/images/pic11.jpg
 nav-menu: true
 ---
 
-I spent 1.5 years as an intern at SAS Institute, developing automation tools in Python, SQL, Spring Boot, and React to aid content delivery and test analysis in the Education Division. 
 
-Prior to this, I was an undergraduate teaching assistant for UNC Chapel Hill's introductory programming course COMP 110, which sees enrollment upwards of 600 students every semester.
+<!-- Main -->
+<div id="main">
 
-I currently make YouTube videos explaining automata theory for fun.
+<!-- One -->
+<section id="one" class="spotlights">
+	<section>
+		<a href="generic.html" class="image">
+			<img src="{% link assets/images/pic08.jpg %}" alt="" data-position="center center" />
+		</a>
+		<div class="content">
+			<div class="inner">
+				<header class="major">
+					<h3>Coming soon: Distributed Research Experience <i>(Summer 2023)</i></h3>
+				</header>
+				<p>I will be researching accessibility under the direction of Dr. Anat Caspi of the University of Washington.</p>
+				<ul class="actions">
+					<li><a href="https://christineiym.github.io/dreu-site/" class="button">Blog</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<section>
+		<a href="generic.html" class="image">
+			<img src="{% link assets/images/pic09.jpg %}" alt="" data-position="top center" />
+		</a>
+		<div class="content">
+			<div class="inner">
+				<header class="major">
+					<h3>Luminary <i>(12.2021 - Present)</i></h3>
+				</header>
+				<p> A collaborative, user-centered, student-volunteer-staffed, open-source initiative started in 2021 that aims to address the knowledge barriers around campus route-finding by crowdsourcing information on obstacles to suggest routes to rooms customized to the needs of the specific user.</p>
+				<ul class="actions">
+                    <li><a href="https://docs.google.com/presentation/d/1D7z0PFlWrLBKqIl4NDVLWi8eKbG7dHSm/edit?usp=sharing&ouid=105001790425137081021&rtpof=true&sd=true" class="button">Project Overview</a></li>
+					<li><a href="https://github.com/polaris-maps" class="button">GitHub Organization</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+</section>
+
+</div>
