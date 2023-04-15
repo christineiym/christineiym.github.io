@@ -69,7 +69,7 @@ nav-menu: true
 		<div class="content">
 			<div class="inner">
 				<header class="major">
-					<h3>A Comparison of Natural Substances to Combat Catheter-Associated Urinary Tract Infections<i>(12.2019-3.2020) </i></h3>
+					<h3>A Comparison of Natural Substances to Combat Catheter-Associated Urinary Tract Infections <i>(12.2019-3.2020)</i></h3>
 				</header>
 				<p>An independent study, conducted under the mentorship of Dr. Shuangying Yu (Central Piedmont Community College), to test the efficacy of common nutrient supplements <i>in vitro</i> in preventing bacterial growth associated with CAUTIs.</p>
                 <p><i>Prizes:</i> 3rd place Biological Science A (UNC Charlotte North Carolina Science and Engineering Fair, Region 6); Honorable Mention High School Biological Science - Advanced (State Competition, <a href="https://www.ncsas.org/">North Carolina Student Academy of Science)</a></p>
