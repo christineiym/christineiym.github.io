@@ -13,4 +13,8 @@ in Science to connect students to STEM research opportunities and mentoring.
 
 This passion followed me into my time at the University of North Carolina at Chapel Hill, where I chose to double major in Computer Science (B.S.) and in Public Health (Nutrition Research and Science).
 
+<li><a href="{% link assets/pdfs/Mendoza_Resume.pdf %}" class="button">Resume (TL;DR)</a></li>
+<li><a href="{% link assets/pdfs/Mendoza_CV.pdf %}" class="button">CV</a></li>
+<li><a href="{% link assets/pdfs/Mendoza_Research_Statement.pdf %}" class="button">Research Statement</a></li>
+
 <!-- Explain how I got into activities; link cv and/or research statement, resume -->
