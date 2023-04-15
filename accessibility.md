@@ -36,7 +36,7 @@ nav-menu: true
 					<h3>Luminary <i>(12.2021 - Present)</i></h3>
 				</header>
 				<p> A collaborative, user-centered, student-volunteer-staffed, open-source initiative started in 2021 that aims to address the knowledge barriers around campus route-finding by crowdsourcing information on obstacles to suggest routes to rooms customized to the needs of the specific user.</p>
-                <p><i>Invited Talks:</i>SAS Institute Accessibility Exchange, July 2022</p>
+                <p><i>Invited Talks:</i> SAS Institute Accessibility Exchange, July 2022</p>
 				<ul class="actions">
                     <li><a href="https://docs.google.com/presentation/d/1D7z0PFlWrLBKqIl4NDVLWi8eKbG7dHSm/edit?usp=sharing&ouid=105001790425137081021&rtpof=true&sd=true" class="button">Project Overview</a></li>
 					<li><a href="https://github.com/polaris-maps" class="button">GitHub Organization</a></li>
@@ -74,7 +74,7 @@ nav-menu: true
 				<p>A prototype of an open-source Google Drive extension to automate the creation of student progress reports by teachers of K-6 students with developmental and intellectual disabilities in the State of Iowa. This project was undertaken under the mentorship of Dr. Gary Bishop and Dr. Karen Erickson (Director, Center for Literacy and Disability Studies).</p>
 				<ul class="actions">
 					<li><a href="https://github.com/christineiym/digitizing-elaa" class="button">Repository</a></li>
-                    <li><a href="https://educateiowa.gov/sites/default/files/documents/Dynamic%20Learning%20Maps%20%28DLM%29%20Aligned%20K-6%20Early%20Literacy%20Alternate%20Assessment%20Iowa%20Manual.pdf">Early Literacy Alternate Assessment System</a></li>
+                    <li><a href="https://educateiowa.gov/sites/default/files/documents/Dynamic%20Learning%20Maps%20%28DLM%29%20Aligned%20K-6%20Early%20Literacy%20Alternate%20Assessment%20Iowa%20Manual.pdf" class="button">Early Literacy Alternate Assessment System</a></li>
 				</ul>
 			</div>
 		</div>
