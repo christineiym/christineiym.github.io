@@ -1,7 +1,7 @@
 ---
 layout: post
 title: getting involved in computer science research
-date: 2023-05-22 10:14:00-0400
+date: 2023-05-22 00:14:00-0400
 description: a guide for newbies, written by an undergrad!
 categories: research-advice
 giscus_comments: false
