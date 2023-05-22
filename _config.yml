@@ -179,9 +179,6 @@ collections:
   art:
     output: true
     permalink: /art/:path/
-  talks:
-    output: true
-    permalink: /talks/:path/
 
 announcements:
   enabled: true
