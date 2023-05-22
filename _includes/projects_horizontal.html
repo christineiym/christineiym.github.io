@@ -10,7 +10,10 @@
         <div class="col-md-12">
         {%- endif -%}
           <div class="card-body">
-            <h3 class="card-title text-lowercase">{{ project.title }}{%- if project.when -%} <i>({{ project.when }})</i>{%- endif %}</h3>
+            <h3 class="card-title">{{ project.title }}</h3>
+            {%- if project.when -%}
+            <p class="card-text"><i>({{ project.when }})</i></p>
+            {%- endif %}
             <p class="card-text">{{ project.description }}</p>
             <div class="row ml-1 mr-1 p-0">
               {%- if project.github -%}
@@ -31,5 +34,4 @@
         </div>
       </div>
     </div>
-  </a>
 </div>

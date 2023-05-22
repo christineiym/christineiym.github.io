@@ -21,7 +21,7 @@ cv_pdf: Mendoza_CV.pdf
 research_statement_pdf: Mendoza_Research_Statement.pdf
 ---
 
-{% if page.resume_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">resume</a>{% endif %} :black_circle: {% if page.cv_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">cv</a>{% endif %} :black_circle: {% if page.research_statement_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">research statement</a>{% endif %}
+{% if page.resume_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">resume</a>{% endif %} <i class="fas fa-sm"></i> {% if page.cv_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">cv</a>{% endif %} <i class="fas fa-sm"></i> {% if page.research_statement_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">research statement</a>{% endif %}
 
 _**keywords:** bridge-building, empowerment through technology, accessibility, advocacy, education, health_
 
