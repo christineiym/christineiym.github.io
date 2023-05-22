@@ -10,7 +10,9 @@ nav_order: 6
 
 <h2 class="category">disability</h2>
 - "The Polaris Project for Accessible Campus Directions", SAS Accessibility Exchange, 7.2022
-- "Accessibility Concerns at UNC Chapel Hill", UNC Chapel Hill Faculty Council, 4.2023
+- "<a href="https://facultygov.unc.edu/wp-content/uploads/sites/261/2023/04/THATT-Presentation-to-Faculty-Council_.pdf">Accessibility Concerns at UNC Chapel Hill</a>", UNC Chapel Hill Faculty Council, 4.2023
+    - Co-presenter: Eleanor Bolton
+    - Faculty advisor: Dr. Jennifer Diliberto
 
 <h2 class="category">education</h2>
 
