@@ -21,7 +21,7 @@ cv_pdf: Mendoza_CV.pdf
 research_statement_pdf: Mendoza_Research_Statement.pdf
 ---
 
-{% if page.resume_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">resume</a>{% endif %} <i class="fas fa-tag fa-sm"></i> {% if page.cv_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">cv</a>{% endif %} <i class="fas fa-tag fa-sm"></i> {% if page.research_statement_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">research statement</a>{% endif %}
+{% if page.resume_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">resume</a>{% endif %} <i class="fas fa-circle-small"></i> {% if page.cv_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">cv</a>{% endif %} <i class="fas fa-circle-small"></i> {% if page.research_statement_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer">research statement</a>{% endif %}
 
 _**keywords:** bridge-building, empowerment through technology, accessibility, advocacy, education, health_
 
