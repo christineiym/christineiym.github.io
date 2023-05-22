@@ -3,9 +3,9 @@ layout: post
 title: getting involved in computer science research
 date: 2023-05-22 10:14:00-0400
 description: a guide for newbies, written by an undergrad!
-categories: sample-posts toc sidebar
-giscus_comments: true
-related_posts: false
+categories: research-advice
+giscus_comments: false
+related_posts: true
 toc:
   sidebar: left
 ---

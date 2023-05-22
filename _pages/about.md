@@ -11,11 +11,17 @@ profile:
 #   address: >
 #     <p>Chapel Hill, North Carolina</p>
 
-news: true  # includes a list of news items
+news: false  # includes a list of news items
 latest_posts: true  # includes a list of the newest posts
 selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
+
+resume_pdf: Mendoza_Resume.pdf
+cv_pdf: Mendoza_CV.pdf
+research_statement_pdf: Mendoza_Research_Statement.pdf
 ---
+
+{% if page.resume_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">resume</a>{% endif %} :black_circle: {% if page.cv_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">cv</a>{% endif %} black_circle: {% if page.research_statement_pdf %}<a href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url}}" target="_blank" rel="noopener noreferrer" class="float-right">research statement</a>{% endif %}
 
 _**keywords:** bridge-building, empowerment through technology, accessibility, advocacy, education, health_
 
