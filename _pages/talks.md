@@ -16,6 +16,6 @@ nav_order: 6
 <h3>Peer to Peer: Supporting Student Learning with Undergraduate Learning Assistants - The Student Perspective <i>(3.2023)</i></h3>
 <p>A brief study on undergraduate learning assistantships. Presented as part of the UNC Center for Faculty Excellence 2023 <a href="https://cfe.unc.edu/teaching-and-learning/learn-from-others/faculty-showcase/">Faculty Showcase on Teaching.</a></p>
 <ul class="actions">
-    <li><a href="{% link assets/pdfs/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
+    <li><a href="{% link assets/pdf/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pdf %}" class="button">Presentation (PDF)</a></li>
     <li><a href="https://cfe.unc.edu/wp-content/uploads/sites/326/2023/04/Mendoza_Peer-to-Peer-Learning-The-ULA-Perspective.pptx" class="button">Presentation (PPTX)</a></li>
 </ul>

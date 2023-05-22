@@ -8,7 +8,7 @@ importance: 1
 category: education
 ---
 <ul class="actions">
-    <li><a href="{% link assets/pdfs/Mendoza_Public_VFL_Project_Summary.pdf %}" class="button">Presentation (PDF)</a></li>
-    <li><a href="{% link assets/pdfs/Mendoza_Public_VFL_Project_Summary.pdf %}" class="button">Repository (Login Required)</a></li>
+    <li><a href="{% link assets/pdf/Mendoza_Public_VFL_Project_Summary.pdf %}" class="button">Presentation (PDF)</a></li>
+    <li><a href="{% link assets/pdf/Mendoza_Public_VFL_Project_Summary.pdf %}" class="button">Repository (Login Required)</a></li>
 </ul>
 <!-- Link to GAP / explain free login -->
