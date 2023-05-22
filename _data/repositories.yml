@@ -1,12 +1,11 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - christineiym
+  - polaris-maps
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - polaris-maps/polaris-api
+  - christineiym/digitizing-ELAA
+  - christineiym/OS-DPI
+  - christineiym/scraper_utils
+  - christineiym/simple-proteomics-tools
+  - leftforbread/leftforbread-app
