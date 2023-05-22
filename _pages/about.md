@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: Programmer, researcher, poet.
+subtitle: 
 
 profile:
   align: right
@@ -17,7 +17,7 @@ selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 ---
 
-**keywords:** bridge-building, empowerment through technology, accessibility, advocacy, education, health
+_**keywords:** bridge-building, empowerment through technology, accessibility, advocacy, education, health_
 
 I am an undergraduate ('24) at the University of North Carolina at Chapel Hill, double majoring in Computer Science (B.S.) and in Nutrition at the [Gillings School of Public Health](https://sph.unc.edu/). I lead a research initiative known as [Luminary](https://www.linkedin.com/company/luminary-maps/) to create accessible campus maps. Under my current advisor, [Dr. Gary Bishop](https://www.cs.unc.edu/~gb/), I have also worked in augmentative and alternative communication and automating alternate literacy assessment systems.
 
