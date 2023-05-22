@@ -5,7 +5,8 @@ permalink: /projects/
 description: 
 nav: true
 nav_order: 2
-display_categories: [accessibility, education, nutrition, work, fun]
+display_categories: [accessibility, education, nutrition]
+card_link: false
 horizontal: false
 ---
 
@@ -18,20 +19,38 @@ horizontal: false
   {%- assign categorized_projects = site.projects | where: "category", category -%}
   {%- assign sorted_projects = categorized_projects | sort: "importance" %}
   <!-- Generate cards for each project -->
-  {% if page.horizontal -%}
-  <div class="container">
-    <div class="row row-cols-2">
-    {%- for project in sorted_projects -%}
-      {% include projects_horizontal.html %}
-    {%- endfor %}
+  {% if page.card_link -%}
+    {% if page.horizontal -%}
+    <div class="container">
+        <div class="row row-cols-2">
+        {%- for project in sorted_projects -%}
+        {% include projects_horizontal_card_link.html %}
+        {%- endfor %}
+        </div>
     </div>
-  </div>
+    {%- else -%}
+    <div class="grid">
+        {%- for project in sorted_projects -%}
+        {% include projects_card_link.html %}
+        {%- endfor %}
+    </div>
+    {%- endif -%}
   {%- else -%}
-  <div class="grid">
-    {%- for project in sorted_projects -%}
-      {% include projects.html %}
-    {%- endfor %}
-  </div>
+    {% if page.horizontal -%}
+    <div class="container">
+        <div class="row row-cols-2">
+        {%- for project in sorted_projects -%}
+        {% include projects_horizontal.html %}
+        {%- endfor %}
+        </div>
+    </div>
+    {%- else -%}
+    <div class="grid">
+        {%- for project in sorted_projects -%}
+        {% include projects.html %}
+        {%- endfor %}
+    </div>
+    {%- endif -%}
   {%- endif -%}
   {% endfor %}
 
@@ -39,20 +58,39 @@ horizontal: false
 <!-- Display projects without categories -->
   {%- assign sorted_projects = site.projects | sort: "importance" -%}
   <!-- Generate cards for each project -->
-  {% if page.horizontal -%}
-  <div class="container">
-    <div class="row row-cols-2">
-    {%- for project in sorted_projects -%}
-      {% include projects_horizontal.html %}
-    {%- endfor %}
+
+  {% if page.card_link -%}
+    {% if page.horizontal -%}
+    <div class="container">
+        <div class="row row-cols-2">
+        {%- for project in sorted_projects -%}
+        {% include projects_horizontal_card_link.html %}
+        {%- endfor %}
+        </div>
     </div>
-  </div>
+    {%- else -%}
+    <div class="grid">
+        {%- for project in sorted_projects -%}
+        {% include projects_card_link.html %}
+        {%- endfor %}
+    </div>
+    {%- endif -%}
   {%- else -%}
-  <div class="grid">
-    {%- for project in sorted_projects -%}
-      {% include projects.html %}
-    {%- endfor %}
-  </div>
+    {% if page.horizontal -%}
+    <div class="container">
+        <div class="row row-cols-2">
+        {%- for project in sorted_projects -%}
+        {% include projects_horizontal.html %}
+        {%- endfor %}
+        </div>
+    </div>
+    {%- else -%}
+    <div class="grid">
+        {%- for project in sorted_projects -%}
+        {% include projects.html %}
+        {%- endfor %}
+    </div>
+    {%- endif -%}
   {%- endif -%}
 {%- endif -%}
 </div>

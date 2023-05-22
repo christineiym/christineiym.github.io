@@ -2,11 +2,18 @@
 layout: page
 permalink: /teaching/
 title: teaching
-description: Materials for courses you taught. Replace this text with your description.
-nav: false
+description: 
+nav: true
 nav_order: 5
 ---
 
-For now, this page is assumed to be a static description of your courses. You can convert it to a collection similar to `_projects/` so that you can have a dedicated page for each course.
+<h2 class="category">Programming Fundamentals</h2>
+- SAS Accessibility Exchange.
 
-Organize your courses by years, topics, or universities, however you like!
+<h2 class="category">Complexity Theory</h2>
+
+<h3>YouTube Series: Models of Language and Computation <i>(1.2023 - Present)</i></h3>
+<p>A YouTube playlist intended to supplement content for COMP455: Models of Language and Computation by diving deeper into real-life applications.</p>
+<ul class="actions">
+    <li><a href="https://youtube.com/playlist?list=PLh1XP0sUat7nhZb4B0PwOgEmBneaCcWoz" class="button">Playlist</a></li>
+</ul>
