@@ -7,7 +7,7 @@ nav: true
 nav_order: 2
 display_categories: [accessibility, education, nutrition]
 card_link: false
-horizontal: false
+horizontal: true
 ---
 
 <!-- pages/projects.md -->

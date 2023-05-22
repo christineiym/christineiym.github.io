@@ -13,6 +13,6 @@ nav_order: 5
     - algorithm development
     - Python syntax
 
-<h2 class="category">Complexity Theory</h2>
+<h2 class="category">complexity theory</h2>
 - [YouTube Series: Models of Language and Computation](https://youtube.com/playlist?list=PLh1XP0sUat7nhZb4B0PwOgEmBneaCcWoz), 1.2023 - Present
-    - Intended to supplement content for COMP455: Models of Language and Computation by diving deeper into real-life applications.
+    - Intended to supplement content for UNC Chapel Hill's COMP455: Models of Language and Computation by diving deeper into real-life applications, and to provide an easy-to-understand resource for computer science students new to the wonders of complexity theory.

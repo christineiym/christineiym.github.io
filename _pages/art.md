@@ -6,6 +6,8 @@ description:
 nav: true
 nav_order: 7
 display_categories: [poetry, digital art, photography]
+card_link: true
+horizontal: true
 ---
 
 <!-- pages/art.md -->
