@@ -1,2 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://christineiym.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://christineiym.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-05-22T06:10:38+00:00</updated><id>https://christineiym.github.io/feed.xml</id><title type="html">blank</title><subtitle>Programmer, researcher, poet.
-</subtitle><entry><title type="html">Displaying External Posts on Your al-folio Blog</title><link href="https://christineiym.github.io/blog/2022/displaying-external-posts-on-your-al-folio-blog/" rel="alternate" type="text/html" title="Displaying External Posts on Your al-folio Blog" /><published>2022-04-23T23:20:09+00:00</published><updated>2022-04-23T23:20:09+00:00</updated><id>https://christineiym.github.io/blog/2022/displaying-external-posts-on-your-al-folio-blog</id><content type="html" xml:base="https://christineiym.github.io/blog/2022/displaying-external-posts-on-your-al-folio-blog/"><![CDATA[]]></content><author><name></name></author></entry></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://christineiym.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://christineiym.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-05-22T06:35:48+00:00</updated><id>https://christineiym.github.io/feed.xml</id><title type="html">blank</title><subtitle>Programmer, researcher, poet.
+</subtitle><entry><title type="html">getting involved in computer science research</title><link href="https://christineiym.github.io/blog/2023/sidebar-table-of-contents/" rel="alternate" type="text/html" title="getting involved in computer science research" /><published>2023-05-22T04:14:00+00:00</published><updated>2023-05-22T04:14:00+00:00</updated><id>https://christineiym.github.io/blog/2023/sidebar-table-of-contents</id><content type="html" xml:base="https://christineiym.github.io/blog/2023/sidebar-table-of-contents/"><![CDATA[<h2 id="what-even-is-cs-research">What even is CS research?</h2>
+<p>As one might expect, CS research is generally not about growing bacteria or running chemical tests (though it can be). It can look different for everyone! Some people focus on the applications of CS in various subfields (autonomous vehicles, robotics, music, medicine, sociology, etc.); others focus on the algorithmic side. One may develop software to address or investigate a problem that hasn’t been addressed before, look for optimizations to existing solutions, build new hardware, develop new ways of testing code or scheduling processes, and more. No one topic is inherently more “computer science-y” than another, and all are important.</p>
+
+<h2 id="how-to-get-involved-in-cs-research">How to get involved in CS research?</h2>
+<p>Getting into research can kind of be likened to looking for internships – it requires much tenacity. However, with research you will be reaching out to professors whose research you are genuinely interested in and express your interest in learning/contributing. For cs specifically, some ways to get into or learn about research include:</p>
+<ul>
+  <li>Look into the websites of professors whose research you are interested in, and reach out to them via office hours and/or email. Even if they don’t have opportunities, ask about their research – you can learn a lot in the process! If you are more comfortable with doing so, you can also reach out to grad students in their group!</li>
+  <li>Look up news related to things that interest you, or check out websites like https://cs.paperswithcode.com/ – there is sometimes pretty cool tech mentioned.</li>
+  <li>Even if you aren’t formally part of research, consider starting or contributing to a passion project!</li>
+  <li>Check out research reading groups in your department, if they exist!</li>
+  <li>Keep an eye out for conferences funding opportunities - they are a great opportunity to network and learn!</li>
+  <li>Never be afraid to ask questions! Things can be really confusing sometimes, but there are so many people happy to support you.</li>
+</ul>
+
+<h2 id="whats-the-purpose-of-cs-research">What’s the purpose of CS research?</h2>
+<p>Some think that with the advent of Chat-GPT and other machine-learning software, core CS is set in stone. But while the field of CS has certainly exploded and been well explored, there are still open questions to answer! (Ex. How to automate testing? How to improve accessibility? What can be modeled and how? What are the limits of certain software/hardware?) Researchers (in general) are among those who are innovators; there is always a way to improve something! In some ways, research can sometimes feel like being involved in a small business (see the Leading a project heading).
+That being said, the purpose of CS research does not have bearing on your purpose for exploring or doing research. That is completely up to you. As noted by <a href="https://krisjordan.com/">Professor Kris Jordan</a> of UNC Chapel Hill, in life in general, always look for ways to make things better, but don’t tie your identity to your product.</p>
+
+<h2 id="looking-for-a-research-topic-and-reading-through-literature">Looking for a research topic, and reading through literature</h2>
+<p>Half the battle in looking for a topic and reading through literature seems to be finding the right terms to express what you are looking for. And that doesn’t even encompass getting up to speed on topics of interest. Here, some tools for searching in general can be applied:</p>
+<ul>
+  <li>Conduct a search with initial terms. Scan through papers that look relevant. Note down terms and concepts that are relevant to what you are looking for. Search again. You may go down a few rabbit holes along the way, and that’s okay, it’s part of the process! If you don’t have too much time to come upon a topic, really try to simply skim.</li>
+  <li>Ask questions fearlessly. Google search, look at forums, talk to others. There is no such thing as a dumb question, because they are all relevant to your learning.</li>
+  <li>Balance searching on your own with turning to others. A lot of information can be found online, but people are invaluable in pointing you in the right direction, connecting you with others who may know information, and supporting you in the other parts that make us all human.</li>
+  <li>Ask experts. They generally know what are open areas of research and what are not, and they can point you in the right direction!</li>
+</ul>
+
+<h2 id="research-during-the-school-year-andor-over-the-summer">Research during the school year and/or over the summer</h2>
+<p>Here’s a (non-exhaustive) list of opportunities to look for and/or keep an eye out for:</p>
+<ul>
+  <li>Working in a lab (often starting as a volunteer, but some may have funding to hire undergrads) 
+SURFs (Summer Undergraduate Research Fellowships): These give you funding to explore a topic of interest. Talk to faculty in your area of interest when looking for mentors!</li>
+  <li><a href="https://www.nsf.gov/crssprgm/reu/reu_search.jsp">REUs (Research Experiences for Undergraduates)</a>: These give you a stipend to conduct research in a lab (often at another university) over the summer and are good for determining if you’d like to research full time.</li>
+  <li>Keep in mind that research also is very important in industry. Many official research positions are geared towards grad students, but keep an eye out for any industry position that interests you!</li>
+</ul>
+
+<h2 id="whats-the-deal-with-papers">What’s the deal with papers?</h2>
+<p>In research, papers are a way for people to share ideas, innovations, and open areas to take next steps. They are intended to be like message boards where people learn from one another, and to tangibly communicate intangible parts of your work! That being said, papers are also like currency – they are often key in helping one get grants, are factors in evaluation, etc. For both reasons, full-time research in academia (and to a lesser extent, in industry) often involves paper-writing. These are good exercises in communication, but don’t let publications make you forget <em>your</em> purpose for researching.</p>
+
+<h2 id="how-to-read-papers">How to read papers?</h2>
+<p>Papers aren’t always intended to be read from beginning to end. Often, after reading the abstract and deciding you want to read the paper, you may jump around (ex. from the intro, to the conclusions, to the details of the research). It’s all up to what works best for you and what you are looking for. Skim and read deeper, avoid drawing conclusions without context, and always examine things in papers (and things in general) critically; just because many people agree on something, doesn’t mean it’s necessarily true.</p>
+
+<h2 id="leading-a-project">Leading a project</h2>
+<p>Sometimes, leading and/or working on a project, especially as one takes ownership of parts of it, can feel a bit like running a small business (probably because running a small business is a BIG project in itself). Some things often involved in the process are:</p>
+<ul>
+  <li>Researching the market</li>
+  <li>Finding a niche</li>
+  <li>Research/developing things (ideally with a user population heavily involved) to fill said niche</li>
+  <li>Finding collaborators</li>
+  <li>Networking and leveraging the power of collective knowledge and enthusiasm - find investors</li>
+  <li>Publicizing your product/discovery</li>
+  <li>Iterating on your product/research, remembering that there are always ways to improve and to help people better, and looking for those ways without forgetting the true purpose of your product</li>
+  <li>Coordinating lots of meetings and communication</li>
+  <li>Fielding a never-ending to do list and learn to prioritize</li>
+  <li>Being (hopefully) encouraging, receptive, and dynamic</li>
+  <li>Remembering that times can get tough, but it’s all part of the journey. Try to enjoy the ride!</li>
+</ul>
+
+<h2 id="other-resources">Other resources</h2>
+<p>There are many places to get connected with cs-related opportunities inside and outside of research! Some are linked below. (Note: Linking does not necessarily signify affiliation or endorsement.)</p>
+<ul>
+  <li><a href="https://rewritingthecode.org/">Rewriting the Code</a></li>
+  <li><a href="https://foundation.blacksintechnology.net/">Blacks in Technology</a></li>
+  <li><a href="https://www.washington.edu/accesscomputing/">AccessComputing</a></li>
+  <li><a href="https://www.microsoft.com/en-us/research/academic-program/undergraduate-research-internship-computing/">Microsoft Undergraduate Research Internship</a></li>
+</ul>]]></content><author><name></name></author><category term="research-advice" /><summary type="html"><![CDATA[a guide for newbies, written by an undergrad!]]></summary></entry></feed>
