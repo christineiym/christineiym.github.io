@@ -5,7 +5,7 @@ title: art
 description: 
 nav: true
 nav_order: 7
-display_categories: [poetry, digital art, photography]
+display_categories: [digital art, poetry, photography]
 card_link: true
 horizontal: false
 ---

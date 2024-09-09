@@ -9,10 +9,17 @@ nav_order: 6
 ---
 
 <h2 class="category">disability</h2>
-- "The Polaris Project for Accessible Campus Directions", SAS Accessibility Exchange, 7.2022
+- "<a href="https://reg.githubuniverse.com/flow/github/universe24/attendee-portal/page/sessioncatalog/session/1715387609641001xaRK">Open Source and Accessibility: Empowering People with Disabilities Globally</a>", Github Universe, 10.2024
+    - Co-panelists: Joe Devon, Joshua Miele, Ed Summers (moderator)
+- "<a href="https://www.csun.edu/cod/conference/sessions/index.php/public/presentations/view/1839">Disability Inclusion and the Marketplace of Ideas</a>", UNC Center for Media Law and Policy, 10.2023
+    - Co-panelists: Eleanor Bolton, Corye Dunn, Victoria ("Tori") Ekstrand
+- "<a href="https://www.csun.edu/cod/conference/sessions/index.php/public/presentations/view/1839">Map to Accessible Trips: OpenSidewalks, AccessMap, Luminary</a>", CSUN Assistive Technology Conference, 3.2024
+    - Co-presenter: Kunal Mehta
+    - Faculty advisor: Anat Caspi
 - "<a href="https://facultygov.unc.edu/wp-content/uploads/sites/261/2023/04/THATT-Presentation-to-Faculty-Council_.pdf">Accessibility Concerns at UNC Chapel Hill</a>", UNC Chapel Hill Faculty Council, 4.2023
     - Co-presenter: Eleanor Bolton
     - Faculty advisor: Dr. Jennifer Diliberto
+- "The Polaris Project for Accessible Campus Directions", SAS Accessibility Exchange, 7.2022
 
 <h2 class="category">education</h2>
 

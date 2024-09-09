@@ -7,6 +7,9 @@ nav: true
 nav_order: 5
 ---
 
+<h2 class="category">databases</h2>
+- From 1.2024 to 5.2024, I was an undergraduate teaching assistant for UNC Chapel Hill's database course COMP 421. I assisted in assignment development and grading, and provided instructional, tech, and emotional support during a multi-week instructor transition.
+
 <h2 class="category">programming fundamentals</h2>
 - From 1.2021 to 5.2021, I was an undergraduate teaching assistant for UNC Chapel Hill's introductory programming course COMP 110, which sees enrollment upwards of 600 students every semester. I tutored students, debugged code, graded assignments, and provided personalized feedback on topics such as: 
     - data analysis with Jupyter and NumPy
