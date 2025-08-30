@@ -1,0 +1,14 @@
+---
+layout: post
+title: GIS
+date: 2025-08-30 00:10:00-0400
+description: test visualizations
+categories: i-had-nowhere-else-to-put-this
+giscus_comments: false
+related_posts: true
+toc:
+  sidebar: left
+---
+
+## Test HTML files
+{% include preprepared_html/covid.html %}
