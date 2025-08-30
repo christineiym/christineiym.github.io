@@ -1,0 +1,456 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 80%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 80%;
+                 height: 750px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Mathematics", "label": "Mathematics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "points of interest", "label": "points of interest", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "landmark", "label": "landmark", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "entrance", "label": "entrance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile surface", "label": "tactile surface", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stairs", "label": "stairs", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room boundaries", "label": "room boundaries", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "elevator", "label": "elevator", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "signs/informational aids", "label": "signs/informational aids", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "information board", "label": "information board", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sitting area", "label": "sitting area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fire door", "label": "fire door", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "dampness/wetness", "label": "dampness/wetness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pothole", "label": "pothole", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "regularity", "label": "regularity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "potential obstacle", "label": "potential obstacle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "step", "label": "step", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "road sign", "label": "road sign", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pedestrian lane", "label": "pedestrian lane", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "connectivity", "label": "connectivity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ramp", "label": "ramp", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slope/grade", "label": "slope/grade", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crack", "label": "crack", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "path", "label": "path", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "width", "label": "width", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slope", "label": "slope", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "material", "label": "material", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pebble", "label": "pebble", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "phone/equipment height", "label": "phone/equipment height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ASL translation", "label": "ASL translation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sign", "label": "sign", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "multimodal announcements", "label": "multimodal announcements", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "car", "label": "car", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "street furniture", "label": "street furniture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ladder", "label": "ladder", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "edging contrast", "label": "edging contrast", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "contrast", "label": "contrast", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "lighting", "label": "lighting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "audio output", "label": "audio output", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "good acoustics", "label": "good acoustics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "\"accessible toilet\"", "label": "\"accessible toilet\"", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "street", "label": "street", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "intersection", "label": "intersection", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "toilet stall size", "label": "toilet stall size", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "length", "label": "length", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "height", "label": "height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "button height", "label": "button height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slipperiness", "label": "slipperiness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "handles", "label": "handles", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile", "label": "tactile", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sound amplification system", "label": "sound amplification system", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "demarcation system", "label": "demarcation system", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "emergency escape infrastructure", "label": "emergency escape infrastructure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "restroom", "label": "restroom", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sink height", "label": "sink height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "soap height", "label": "soap height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "paper towel height", "label": "paper towel height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "hallway", "label": "hallway", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "corner/intersection", "label": "corner/intersection", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "height of mechanisms/equipment", "label": "height of mechanisms/equipment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ease of handling of mechanisms/equipment", "label": "ease of handling of mechanisms/equipment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "surface evenness", "label": "surface evenness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "boundaries", "label": "boundaries", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "workplace", "label": "workplace", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "space and interior", "label": "space and interior", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flexibility in floor planning", "label": "flexibility in floor planning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "workplace promoting intellectual productivity", "label": "workplace promoting intellectual productivity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "interior planning", "label": "interior planning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "work environment", "label": "work environment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "provisioned space", "label": "provisioned space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "exterior design", "label": "exterior design", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "spatial margin", "label": "spatial margin", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor load margin", "label": "floor load margin", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flexibility in operations of building services", "label": "flexibility in operations of building services", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "propietary space", "label": "propietary space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "common space", "label": "common space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "functionality and selectivity of office furniture", "label": "functionality and selectivity of office furniture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "adequacy in OA equipment", "label": "adequacy in OA equipment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "acoustics", "label": "acoustics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "background noise levels", "label": "background noise levels", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "health and comfort", "label": "health and comfort", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "convenience", "label": "convenience", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "safety", "label": "safety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "operations/maintenance/management", "label": "operations/maintenance/management", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "program", "label": "program", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "thermal comfort / air quality", "label": "thermal comfort / air quality", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "refresh", "label": "refresh", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fitness", "label": "fitness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "noise", "label": "noise", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sound absorption", "label": "sound absorption", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "daylighting", "label": "daylighting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "anti-glare measures", "label": "anti-glare measures", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "illuminance", "label": "illuminance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "daylight control", "label": "daylight control", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "anti-glare measure in lighting devices", "label": "anti-glare measure in lighting devices", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "type of air conditioning system and individual controllability", "label": "type of air conditioning system and individual controllability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room temperature control", "label": "room temperature control", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "humidity control", "label": "humidity control", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ventilation performance", "label": "ventilation performance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room temperature", "label": "room temperature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "perimeter performance", "label": "perimeter performance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ventilation rate", "label": "ventilation rate", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "natural ventilation performance", "label": "natural ventilation performance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "view from working space", "label": "view from working space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "connection into indoor plants and greens", "label": "connection into indoor plants and greens", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "connection into outdoor plants and greens", "label": "connection into outdoor plants and greens", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "water supply/drainage", "label": "water supply/drainage", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "refresh space", "label": "refresh space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "space for daily meals", "label": "space for daily meals", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "smoke isolation and prohibition", "label": "smoke isolation and prohibition", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "promotion/support of fitness", "label": "promotion/support of fitness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "promotion of stairs usage", "label": "promotion of stairs usage", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mobility and communication", "label": "mobility and communication", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ICT", "label": "ICT", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "encounter creation on daily routes", "label": "encounter creation on daily routes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "comfort in elevator ride", "label": "comfort in elevator ride", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "compliance with barrier-free law", "label": "compliance with barrier-free law", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "meeting space", "label": "meeting space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "glare", "label": "glare", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "temperature", "label": "temperature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "air quality", "label": "air quality", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "green space", "label": "green space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fan/ventilation", "label": "fan/ventilation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "advanced ICT infrastructure", "label": "advanced ICT infrastructure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "disaster resistance and resiliency", "label": "disaster resistance and resiliency", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "measures against harmful substances", "label": "measures against harmful substances", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "water safety", "label": "water safety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "security", "label": "security", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "earthquake resistance", "label": "earthquake resistance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "power supply in emergency", "label": "power supply in emergency", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "seismic isolation and vibration damping systems", "label": "seismic isolation and vibration damping systems", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "reliability in electrical equipment", "label": "reliability in electrical equipment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "chemical pollutants", "label": "chemical pollutants", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "use of materials without harmful substances", "label": "use of materials without harmful substances", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "measures against existing non-conforming buildings", "label": "measures against existing non-conforming buildings", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "asbestos", "label": "asbestos", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "measures against soil pollution", "label": "measures against soil pollution", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "maintenance planning", "label": "maintenance planning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "satisfaction survey", "label": "satisfaction survey", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "measures to disasters", "label": "measures to disasters", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "building design considering maintenance", "label": "building design considering maintenance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "securing maintenance functions", "label": "securing maintenance functions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "maintenance status", "label": "maintenance status", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mid-long term maintenance plan", "label": "mid-long term maintenance plan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "regular inspection and report", "label": "regular inspection and report", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "maintenance quality", "label": "maintenance quality", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "business continuity plan", "label": "business continuity plan", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fire fighting training", "label": "fire fighting training", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "AED", "label": "AED", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mental health", "label": "mental health", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "medical", "label": "medical", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "information sharing", "label": "information sharing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "health promotion", "label": "health promotion", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Materials Science", "label": "Materials Science", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Decision Sciences", "label": "Decision Sciences", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Psychology", "label": "Psychology", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Economics, Econometrics and Finance", "label": "Economics, Econometrics and Finance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "curb cut", "label": "curb cut", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "handrails", "label": "handrails", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flight width", "label": "flight width", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "resting places", "label": "resting places", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "handrail", "label": "handrail", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "landing", "label": "landing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "toilet backseat", "label": "toilet backseat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "lanes", "label": "lanes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "brick", "label": "brick", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "concrete", "label": "concrete", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bright", "label": "bright", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shorelines", "label": "shorelines", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "puddle", "label": "puddle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "precipitation", "label": "precipitation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "paved", "label": "paved", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "riser height", "label": "riser height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "number of floors", "label": "number of floors", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor height", "label": "floor height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sky-bridge", "label": "sky-bridge", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "number of stairs per floor", "label": "number of stairs per floor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tread depth", "label": "tread depth", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "occupant", "label": "occupant", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "service", "label": "service", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "emergency information", "label": "emergency information", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "turn", "label": "turn", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "condition/maintenance", "label": "condition/maintenance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cultural", "label": "cultural", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "social", "label": "social", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile pavement", "label": "tactile pavement", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crosswalk", "label": "crosswalk", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "terrain", "label": "terrain", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "condition", "label": "condition", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "morphology", "label": "morphology", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "static", "label": "static", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "moving", "label": "moving", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tree", "label": "tree", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "installations for individuals with disabilities", "label": "installations for individuals with disabilities", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "airport", "label": "airport", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "education", "label": "education", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mall", "label": "mall", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ADA parking spot", "label": "ADA parking spot", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "door", "label": "door", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "escalator", "label": "escalator", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "exercise", "label": "exercise", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "restaurant", "label": "restaurant", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "hotel", "label": "hotel", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bus station", "label": "bus station", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "touristic", "label": "touristic", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "institutional", "label": "institutional", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "environmental factors", "label": "environmental factors", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "metro-railway station", "label": "metro-railway station", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "commercial", "label": "commercial", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "travel/transportation", "label": "travel/transportation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "recreation", "label": "recreation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public utilitarian facility", "label": "public utilitarian facility", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ticket vending machine", "label": "ticket vending machine", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "telephone booth", "label": "telephone booth", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "guiding blocks", "label": "guiding blocks", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "building considerations", "label": "building considerations", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "layout", "label": "layout", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "strength and stability of structure", "label": "strength and stability of structure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "aesthetics", "label": "aesthetics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "functionality", "label": "functionality", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sustainability", "label": "sustainability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "main entrance", "label": "main entrance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "doorway", "label": "doorway", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "interior pathways", "label": "interior pathways", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public area", "label": "public area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "recreation area", "label": "recreation area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "food/beverage area", "label": "food/beverage area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "reacher/grabber", "label": "reacher/grabber", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "emergency alarms", "label": "emergency alarms", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "audial", "label": "audial", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "visual", "label": "visual", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "information counter", "label": "information counter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public", "label": "public", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "marked for people with disabilities", "label": "marked for people with disabilities", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "praying room", "label": "praying room", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ablution area", "label": "ablution area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "size", "label": "size", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bedroom", "label": "bedroom", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bath in room", "label": "bath in room", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile button", "label": "tactile button", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "seating arrangement (relative to lecturer)", "label": "seating arrangement (relative to lecturer)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "add-on enlarged handles for writing", "label": "add-on enlarged handles for writing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "classroom", "label": "classroom", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "treading", "label": "treading", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "operable with one hand", "label": "operable with one hand", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "counter", "label": "counter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "seat", "label": "seat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "furniture", "label": "furniture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "movable", "label": "movable", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor material", "label": "floor material", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "door/wall", "label": "door/wall", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bookstore", "label": "bookstore", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "waiting space near checkout", "label": "waiting space near checkout", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "help desk", "label": "help desk", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "entrance landing", "label": "entrance landing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fixture", "label": "fixture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "switch", "label": "switch", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "door handle", "label": "door handle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "window locking/opening control", "label": "window locking/opening control", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "usability by one hand", "label": "usability by one hand", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stand", "label": "stand", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "depth of space underneath", "label": "depth of space underneath", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "weight", "label": "weight", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "door open width for swinging outwards", "label": "door open width for swinging outwards", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor decal", "label": "floor decal", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "vinyl strip", "label": "vinyl strip", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "clarity", "label": "clarity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "font size", "label": "font size", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traction", "label": "traction", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "durability", "label": "durability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slip resistance", "label": "slip resistance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "type", "label": "type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "automatic sliding", "label": "automatic sliding", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "turning radius", "label": "turning radius", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bus", "label": "bus", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic sign", "label": "traffic sign", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "zebra", "label": "zebra", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stop", "label": "stop", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "road crossing", "label": "road crossing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "school crossing", "label": "school crossing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic light ahead", "label": "traffic light ahead", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic light status", "label": "traffic light status", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cross slope", "label": "cross slope", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sensory stimuli", "label": "sensory stimuli", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "lobby", "label": "lobby", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "peak hours", "label": "peak hours", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flickering", "label": "flickering", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fluorescent", "label": "fluorescent", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "highly contrasting", "label": "highly contrasting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "color/texture", "label": "color/texture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "brightness", "label": "brightness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "reverberation time", "label": "reverberation time", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "escape possibilities", "label": "escape possibilities", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "spaciousness", "label": "spaciousness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stimulus zones", "label": "stimulus zones", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "places of solitude/quiet", "label": "places of solitude/quiet", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "automatic mechanism", "label": "automatic mechanism", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sensory room", "label": "sensory room", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "visual calm", "label": "visual calm", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "orderliness", "label": "orderliness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "dimensions", "label": "dimensions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "noise level", "label": "noise level", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crowdedness", "label": "crowdedness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "quality of life", "label": "quality of life", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "independence", "label": "independence", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "social participation", "label": "social participation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "well-being", "label": "well-being", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "variety", "label": "variety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "accessibility", "label": "accessibility", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "predictability", "label": "predictability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "interactivity", "label": "interactivity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "homelike", "label": "homelike", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "inclusivity", "label": "inclusivity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "homelike and robust materials", "label": "homelike and robust materials", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "personalizability", "label": "personalizability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "comfort", "label": "comfort", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "escape space", "label": "escape space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ventilation", "label": "ventilation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "indoor", "label": "indoor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "irregular joins", "label": "irregular joins", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "features", "label": "features", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "trash", "label": "trash", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "vendors", "label": "vendors", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "roadside embellishment", "label": "roadside embellishment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "construction", "label": "construction", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shelter", "label": "shelter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "train station", "label": "train station", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "priority seat placement", "label": "priority seat placement", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "audio messages", "label": "audio messages", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "schedules", "label": "schedules", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "height to platform", "label": "height to platform", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "distance between platform and vehicle", "label": "distance between platform and vehicle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic safety", "label": "traffic safety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crossing", "label": "crossing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "season", "label": "season", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "rocks", "label": "rocks", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "construction materials", "label": "construction materials", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "audio announcement", "label": "audio announcement", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic light", "label": "traffic light", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "condition (functional/not)", "label": "condition (functional/not)", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"color": "red", "from": "Mathematics", "to": "points of interest", "width": 1}, {"color": "red", "from": "Mathematics", "to": "landmark", "width": 1}, {"color": "red", "from": "Mathematics", "to": "entrance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "tactile surface", "width": 1}, {"color": "red", "from": "Mathematics", "to": "stairs", "width": 1}, {"color": "red", "from": "Mathematics", "to": "room boundaries", "width": 1}, {"color": "red", "from": "Mathematics", "to": "elevator", "width": 1}, {"color": "red", "from": "Mathematics", "to": "signs/informational aids", "width": 1}, {"color": "red", "from": "Mathematics", "to": "information board", "width": 1}, {"color": "red", "from": "Mathematics", "to": "sitting area", "width": 1}, {"color": "red", "from": "Mathematics", "to": "fire door", "width": 1}, {"color": "red", "from": "Mathematics", "to": "dampness/wetness", "width": 1}, {"color": "red", "from": "Mathematics", "to": "pothole", "width": 1}, {"color": "red", "from": "Mathematics", "to": "regularity", "width": 1}, {"color": "red", "from": "Mathematics", "to": "potential obstacle", "width": 1}, {"color": "red", "from": "Mathematics", "to": "step", "width": 1}, {"color": "red", "from": "Mathematics", "to": "road sign", "width": 1}, {"color": "red", "from": "Mathematics", "to": "pedestrian lane", "width": 1}, {"color": "red", "from": "Mathematics", "to": "connectivity", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ramp", "width": 1}, {"color": "red", "from": "Mathematics", "to": "slope/grade", "width": 1}, {"color": "red", "from": "Mathematics", "to": "crack", "width": 1}, {"color": "red", "from": "Mathematics", "to": "path", "width": 1}, {"color": "red", "from": "Mathematics", "to": "width", "width": 1}, {"color": "red", "from": "Mathematics", "to": "slope", "width": 1}, {"color": "red", "from": "Mathematics", "to": "material", "width": 1}, {"color": "red", "from": "Mathematics", "to": "pebble", "width": 1}, {"color": "red", "from": "Mathematics", "to": "phone/equipment height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ASL translation", "width": 1}, {"color": "red", "from": "Mathematics", "to": "sign", "width": 1}, {"color": "red", "from": "Mathematics", "to": "multimodal announcements", "width": 1}, {"color": "red", "from": "Mathematics", "to": "car", "width": 1}, {"color": "red", "from": "Mathematics", "to": "street furniture", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ladder", "width": 1}, {"color": "red", "from": "Mathematics", "to": "edging contrast", "width": 1}, {"color": "red", "from": "Mathematics", "to": "contrast", "width": 1}, {"color": "red", "from": "Mathematics", "to": "lighting", "width": 1}, {"color": "red", "from": "Mathematics", "to": "audio output", "width": 1}, {"color": "red", "from": "Mathematics", "to": "good acoustics", "width": 1}, {"color": "red", "from": "Mathematics", "to": "\"accessible toilet\"", "width": 1}, {"color": "red", "from": "Mathematics", "to": "street", "width": 1}, {"color": "red", "from": "Mathematics", "to": "intersection", "width": 1}, {"color": "red", "from": "Mathematics", "to": "toilet stall size", "width": 1}, {"color": "red", "from": "Mathematics", "to": "length", "width": 1}, {"color": "red", "from": "Mathematics", "to": "height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "button height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "slipperiness", "width": 1}, {"color": "red", "from": "Mathematics", "to": "handles", "width": 1}, {"color": "red", "from": "Mathematics", "to": "tactile", "width": 1}, {"color": "red", "from": "Mathematics", "to": "sound amplification system", "width": 1}, {"color": "red", "from": "Mathematics", "to": "demarcation system", "width": 1}, {"color": "red", "from": "Mathematics", "to": "emergency escape infrastructure", "width": 1}, {"color": "red", "from": "Mathematics", "to": "restroom", "width": 1}, {"color": "red", "from": "Mathematics", "to": "sink height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "soap height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "paper towel height", "width": 1}, {"color": "red", "from": "Mathematics", "to": "hallway", "width": 1}, {"color": "red", "from": "Mathematics", "to": "corner/intersection", "width": 1}, {"color": "red", "from": "Mathematics", "to": "height of mechanisms/equipment", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ease of handling of mechanisms/equipment", "width": 1}, {"color": "red", "from": "Mathematics", "to": "surface evenness", "width": 1}, {"color": "red", "from": "Mathematics", "to": "boundaries", "width": 1}, {"color": "red", "from": "Mathematics", "to": "workplace", "width": 1}, {"color": "red", "from": "Mathematics", "to": "space and interior", "width": 1}, {"color": "red", "from": "Mathematics", "to": "flexibility in floor planning", "width": 1}, {"color": "red", "from": "Mathematics", "to": "workplace promoting intellectual productivity", "width": 1}, {"color": "red", "from": "Mathematics", "to": "interior planning", "width": 1}, {"color": "red", "from": "Mathematics", "to": "work environment", "width": 1}, {"color": "red", "from": "Mathematics", "to": "provisioned space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "exterior design", "width": 1}, {"color": "red", "from": "Mathematics", "to": "spatial margin", "width": 1}, {"color": "red", "from": "Mathematics", "to": "floor load margin", "width": 1}, {"color": "red", "from": "Mathematics", "to": "flexibility in operations of building services", "width": 1}, {"color": "red", "from": "Mathematics", "to": "propietary space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "common space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "functionality and selectivity of office furniture", "width": 1}, {"color": "red", "from": "Mathematics", "to": "adequacy in OA equipment", "width": 1}, {"color": "red", "from": "Mathematics", "to": "acoustics", "width": 1}, {"color": "red", "from": "Mathematics", "to": "background noise levels", "width": 1}, {"color": "red", "from": "Mathematics", "to": "health and comfort", "width": 1}, {"color": "red", "from": "Mathematics", "to": "convenience", "width": 1}, {"color": "red", "from": "Mathematics", "to": "safety", "width": 1}, {"color": "red", "from": "Mathematics", "to": "operations/maintenance/management", "width": 1}, {"color": "red", "from": "Mathematics", "to": "program", "width": 1}, {"color": "red", "from": "Mathematics", "to": "thermal comfort / air quality", "width": 1}, {"color": "red", "from": "Mathematics", "to": "refresh", "width": 1}, {"color": "red", "from": "Mathematics", "to": "fitness", "width": 1}, {"color": "red", "from": "Mathematics", "to": "noise", "width": 1}, {"color": "red", "from": "Mathematics", "to": "sound absorption", "width": 1}, {"color": "red", "from": "Mathematics", "to": "daylighting", "width": 1}, {"color": "red", "from": "Mathematics", "to": "anti-glare measures", "width": 1}, {"color": "red", "from": "Mathematics", "to": "illuminance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "daylight control", "width": 1}, {"color": "red", "from": "Mathematics", "to": "anti-glare measure in lighting devices", "width": 1}, {"color": "red", "from": "Mathematics", "to": "type of air conditioning system and individual controllability", "width": 1}, {"color": "red", "from": "Mathematics", "to": "room temperature control", "width": 1}, {"color": "red", "from": "Mathematics", "to": "humidity control", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ventilation performance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "room temperature", "width": 1}, {"color": "red", "from": "Mathematics", "to": "perimeter performance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ventilation rate", "width": 1}, {"color": "red", "from": "Mathematics", "to": "natural ventilation performance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "view from working space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "connection into indoor plants and greens", "width": 1}, {"color": "red", "from": "Mathematics", "to": "connection into outdoor plants and greens", "width": 1}, {"color": "red", "from": "Mathematics", "to": "water supply/drainage", "width": 1}, {"color": "red", "from": "Mathematics", "to": "refresh space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "space for daily meals", "width": 1}, {"color": "red", "from": "Mathematics", "to": "smoke isolation and prohibition", "width": 1}, {"color": "red", "from": "Mathematics", "to": "promotion/support of fitness", "width": 1}, {"color": "red", "from": "Mathematics", "to": "promotion of stairs usage", "width": 1}, {"color": "red", "from": "Mathematics", "to": "mobility and communication", "width": 1}, {"color": "red", "from": "Mathematics", "to": "ICT", "width": 1}, {"color": "red", "from": "Mathematics", "to": "encounter creation on daily routes", "width": 1}, {"color": "red", "from": "Mathematics", "to": "comfort in elevator ride", "width": 1}, {"color": "red", "from": "Mathematics", "to": "compliance with barrier-free law", "width": 1}, {"color": "red", "from": "Mathematics", "to": "meeting space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "glare", "width": 1}, {"color": "red", "from": "Mathematics", "to": "temperature", "width": 1}, {"color": "red", "from": "Mathematics", "to": "air quality", "width": 1}, {"color": "red", "from": "Mathematics", "to": "green space", "width": 1}, {"color": "red", "from": "Mathematics", "to": "fan/ventilation", "width": 1}, {"color": "red", "from": "Mathematics", "to": "advanced ICT infrastructure", "width": 1}, {"color": "red", "from": "Mathematics", "to": "disaster resistance and resiliency", "width": 1}, {"color": "red", "from": "Mathematics", "to": "measures against harmful substances", "width": 1}, {"color": "red", "from": "Mathematics", "to": "water safety", "width": 1}, {"color": "red", "from": "Mathematics", "to": "security", "width": 1}, {"color": "red", "from": "Mathematics", "to": "earthquake resistance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "power supply in emergency", "width": 1}, {"color": "red", "from": "Mathematics", "to": "seismic isolation and vibration damping systems", "width": 1}, {"color": "red", "from": "Mathematics", "to": "reliability in electrical equipment", "width": 1}, {"color": "red", "from": "Mathematics", "to": "chemical pollutants", "width": 1}, {"color": "red", "from": "Mathematics", "to": "use of materials without harmful substances", "width": 1}, {"color": "red", "from": "Mathematics", "to": "measures against existing non-conforming buildings", "width": 1}, {"color": "red", "from": "Mathematics", "to": "asbestos", "width": 1}, {"color": "red", "from": "Mathematics", "to": "measures against soil pollution", "width": 1}, {"color": "red", "from": "Mathematics", "to": "maintenance planning", "width": 1}, {"color": "red", "from": "Mathematics", "to": "satisfaction survey", "width": 1}, {"color": "red", "from": "Mathematics", "to": "measures to disasters", "width": 1}, {"color": "red", "from": "Mathematics", "to": "building design considering maintenance", "width": 1}, {"color": "red", "from": "Mathematics", "to": "securing maintenance functions", "width": 1}, {"color": "red", "from": "Mathematics", "to": "maintenance status", "width": 1}, {"color": "red", "from": "Mathematics", "to": "mid-long term maintenance plan", "width": 1}, {"color": "red", "from": "Mathematics", "to": "regular inspection and report", "width": 1}, {"color": "red", "from": "Mathematics", "to": "maintenance quality", "width": 1}, {"color": "red", "from": "Mathematics", "to": "business continuity plan", "width": 1}, {"color": "red", "from": "Mathematics", "to": "fire fighting training", "width": 1}, {"color": "red", "from": "Mathematics", "to": "AED", "width": 1}, {"color": "red", "from": "Mathematics", "to": "mental health", "width": 1}, {"color": "red", "from": "Mathematics", "to": "medical", "width": 1}, {"color": "red", "from": "Mathematics", "to": "information sharing", "width": 1}, {"color": "red", "from": "Mathematics", "to": "health promotion", "width": 1}, {"color": "green", "from": "points of interest", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "points of interest", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "points of interest", "to": "Psychology", "width": 1}, {"color": "purple", "from": "entrance", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "entrance", "to": "Psychology", "width": 1}, {"color": "green", "from": "stairs", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "stairs", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "stairs", "to": "Psychology", "width": 1}, {"color": "purple", "from": "room boundaries", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "room boundaries", "to": "Psychology", "width": 1}, {"color": "green", "from": "elevator", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "elevator", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "elevator", "to": "Psychology", "width": 1}, {"color": "purple", "from": "signs/informational aids", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "signs/informational aids", "to": "Psychology", "width": 1}, {"color": "purple", "from": "pothole", "to": "Decision Sciences", "width": 1}, {"color": "purple", "from": "regularity", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "regularity", "to": "Psychology", "width": 1}, {"color": "green", "from": "potential obstacle", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "step", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "step", "to": "Psychology", "width": 1}, {"color": "purple", "from": "road sign", "to": "Decision Sciences", "width": 1}, {"color": "purple", "from": "pedestrian lane", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "connectivity", "to": "Psychology", "width": 1}, {"color": "purple", "from": "ramp", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "ramp", "to": "Psychology", "width": 1}, {"color": "purple", "from": "slope/grade", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "slope/grade", "to": "Psychology", "width": 1}, {"color": "black", "from": "crack", "to": "Psychology", "width": 1}, {"color": "green", "from": "path", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "path", "to": "Decision Sciences", "width": 1}, {"color": "orange", "from": "width", "to": "Economics, Econometrics and Finance", "width": 1}, {"color": "green", "from": "width", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "width", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "width", "to": "Psychology", "width": 1}, {"color": "orange", "from": "slope", "to": "Economics, Econometrics and Finance", "width": 1}, {"color": "purple", "from": "slope", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "slope", "to": "Psychology", "width": 1}, {"color": "orange", "from": "material", "to": "Economics, Econometrics and Finance", "width": 1}, {"color": "green", "from": "material", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "material", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "material", "to": "Psychology", "width": 1}, {"color": "purple", "from": "phone/equipment height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "phone/equipment height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "ASL translation", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "ASL translation", "to": "Psychology", "width": 1}, {"color": "purple", "from": "sign", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "sign", "to": "Psychology", "width": 1}, {"color": "purple", "from": "multimodal announcements", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "multimodal announcements", "to": "Psychology", "width": 1}, {"color": "purple", "from": "car", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "car", "to": "Psychology", "width": 1}, {"color": "purple", "from": "street furniture", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "street furniture", "to": "Psychology", "width": 1}, {"color": "purple", "from": "ladder", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "ladder", "to": "Psychology", "width": 1}, {"color": "purple", "from": "edging contrast", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "edging contrast", "to": "Psychology", "width": 1}, {"color": "purple", "from": "contrast", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "contrast", "to": "Psychology", "width": 1}, {"color": "green", "from": "lighting", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "lighting", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "lighting", "to": "Psychology", "width": 1}, {"color": "purple", "from": "audio output", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "audio output", "to": "Psychology", "width": 1}, {"color": "purple", "from": "good acoustics", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "good acoustics", "to": "Psychology", "width": 1}, {"color": "purple", "from": "\"accessible toilet\"", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "\"accessible toilet\"", "to": "Psychology", "width": 1}, {"color": "green", "from": "street", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "street", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "street", "to": "Psychology", "width": 1}, {"color": "purple", "from": "intersection", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "intersection", "to": "Psychology", "width": 1}, {"color": "purple", "from": "toilet stall size", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "toilet stall size", "to": "Psychology", "width": 1}, {"color": "green", "from": "length", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "length", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "length", "to": "Psychology", "width": 1}, {"color": "green", "from": "height", "to": "Materials Science", "width": 1}, {"color": "purple", "from": "height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "button height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "button height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "slipperiness", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "slipperiness", "to": "Psychology", "width": 1}, {"color": "purple", "from": "handles", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "handles", "to": "Psychology", "width": 1}, {"color": "purple", "from": "tactile", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "tactile", "to": "Psychology", "width": 1}, {"color": "purple", "from": "sound amplification system", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "sound amplification system", "to": "Psychology", "width": 1}, {"color": "purple", "from": "demarcation system", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "demarcation system", "to": "Psychology", "width": 1}, {"color": "purple", "from": "emergency escape infrastructure", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "emergency escape infrastructure", "to": "Psychology", "width": 1}, {"color": "purple", "from": "restroom", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "restroom", "to": "Psychology", "width": 1}, {"color": "purple", "from": "sink height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "sink height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "soap height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "soap height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "paper towel height", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "paper towel height", "to": "Psychology", "width": 1}, {"color": "purple", "from": "hallway", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "hallway", "to": "Psychology", "width": 1}, {"color": "purple", "from": "corner/intersection", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "corner/intersection", "to": "Psychology", "width": 1}, {"color": "purple", "from": "height of mechanisms/equipment", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "height of mechanisms/equipment", "to": "Psychology", "width": 1}, {"color": "purple", "from": "ease of handling of mechanisms/equipment", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "ease of handling of mechanisms/equipment", "to": "Psychology", "width": 1}, {"color": "purple", "from": "surface evenness", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "surface evenness", "to": "Psychology", "width": 1}, {"color": "purple", "from": "boundaries", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "boundaries", "to": "Psychology", "width": 1}, {"color": "purple", "from": "acoustics", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "acoustics", "to": "Psychology", "width": 1}, {"color": "purple", "from": "background noise levels", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "background noise levels", "to": "Psychology", "width": 1}, {"color": "green", "from": "safety", "to": "Materials Science", "width": 1}, {"color": "black", "from": "safety", "to": "Psychology", "width": 1}, {"color": "green", "from": "air quality", "to": "Materials Science", "width": 1}, {"color": "black", "from": "security", "to": "Psychology", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "curb cut", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "handrails", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "flight width", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "resting places", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "handrail", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "landing", "width": 1}, {"color": "orange", "from": "Economics, Econometrics and Finance", "to": "toilet backseat", "width": 1}, {"color": "purple", "from": "handrails", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "handrails", "to": "Psychology", "width": 1}, {"color": "green", "from": "flight width", "to": "Materials Science", "width": 1}, {"color": "green", "from": "landing", "to": "Materials Science", "width": 1}, {"color": "black", "from": "landing", "to": "Psychology", "width": 1}, {"color": "green", "from": "Materials Science", "to": "lanes", "width": 1}, {"color": "green", "from": "Materials Science", "to": "brick", "width": 1}, {"color": "green", "from": "Materials Science", "to": "concrete", "width": 1}, {"color": "green", "from": "Materials Science", "to": "bright", "width": 1}, {"color": "green", "from": "Materials Science", "to": "shorelines", "width": 1}, {"color": "green", "from": "Materials Science", "to": "puddle", "width": 1}, {"color": "green", "from": "Materials Science", "to": "precipitation", "width": 1}, {"color": "green", "from": "Materials Science", "to": "paved", "width": 1}, {"color": "green", "from": "Materials Science", "to": "riser height", "width": 1}, {"color": "green", "from": "Materials Science", "to": "number of floors", "width": 1}, {"color": "green", "from": "Materials Science", "to": "floor height", "width": 1}, {"color": "green", "from": "Materials Science", "to": "sky-bridge", "width": 1}, {"color": "green", "from": "Materials Science", "to": "number of stairs per floor", "width": 1}, {"color": "green", "from": "Materials Science", "to": "tread depth", "width": 1}, {"color": "green", "from": "Materials Science", "to": "occupant", "width": 1}, {"color": "green", "from": "Materials Science", "to": "service", "width": 1}, {"color": "green", "from": "Materials Science", "to": "emergency information", "width": 1}, {"color": "green", "from": "Materials Science", "to": "turn", "width": 1}, {"color": "green", "from": "Materials Science", "to": "condition/maintenance", "width": 1}, {"color": "green", "from": "Materials Science", "to": "cultural", "width": 1}, {"color": "green", "from": "Materials Science", "to": "social", "width": 1}, {"color": "green", "from": "Materials Science", "to": "tactile pavement", "width": 1}, {"color": "green", "from": "Materials Science", "to": "crosswalk", "width": 1}, {"color": "green", "from": "Materials Science", "to": "terrain", "width": 1}, {"color": "green", "from": "Materials Science", "to": "condition", "width": 1}, {"color": "green", "from": "Materials Science", "to": "morphology", "width": 1}, {"color": "green", "from": "Materials Science", "to": "static", "width": 1}, {"color": "green", "from": "Materials Science", "to": "moving", "width": 1}, {"color": "green", "from": "Materials Science", "to": "tree", "width": 1}, {"color": "green", "from": "Materials Science", "to": "installations for individuals with disabilities", "width": 1}, {"color": "black", "from": "bright", "to": "Psychology", "width": 1}, {"color": "purple", "from": "puddle", "to": "Decision Sciences", "width": 1}, {"color": "purple", "from": "riser height", "to": "Decision Sciences", "width": 1}, {"color": "purple", "from": "service", "to": "Decision Sciences", "width": 1}, {"color": "purple", "from": "social", "to": "Decision Sciences", "width": 1}, {"color": "black", "from": "condition", "to": "Psychology", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "airport", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "education", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "mall", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "ADA parking spot", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "door", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "escalator", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "exercise", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "restaurant", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "hotel", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "bus station", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "touristic", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "institutional", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "environmental factors", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "metro-railway station", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "commercial", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "travel/transportation", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "recreation", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "public utilitarian facility", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "ticket vending machine", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "telephone booth", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "guiding blocks", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "building considerations", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "layout", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "strength and stability of structure", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "aesthetics", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "functionality", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "sustainability", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "main entrance", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "doorway", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "interior pathways", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "public area", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "recreation area", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "food/beverage area", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "reacher/grabber", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "emergency alarms", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "audial", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "visual", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "information counter", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "public", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "marked for people with disabilities", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "praying room", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "ablution area", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "size", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "bedroom", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "bath in room", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "tactile button", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "seating arrangement (relative to lecturer)", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "add-on enlarged handles for writing", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "classroom", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "treading", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "operable with one hand", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "counter", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "seat", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "furniture", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "movable", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "floor material", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "door/wall", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "bookstore", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "waiting space near checkout", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "help desk", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "entrance landing", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "fixture", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "switch", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "door handle", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "window locking/opening control", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "usability by one hand", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "stand", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "depth of space underneath", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "weight", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "door open width for swinging outwards", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "floor decal", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "vinyl strip", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "clarity", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "font size", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "traction", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "durability", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "slip resistance", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "type", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "automatic sliding", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "turning radius", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "bus", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "traffic sign", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "zebra", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "stop", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "road crossing", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "school crossing", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "traffic light ahead", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "traffic light status", "width": 1}, {"color": "purple", "from": "Decision Sciences", "to": "cross slope", "width": 1}, {"color": "black", "from": "bus station", "to": "Psychology", "width": 1}, {"color": "black", "from": "clarity", "to": "Psychology", "width": 1}, {"color": "black", "from": "Psychology", "to": "sensory stimuli", "width": 1}, {"color": "black", "from": "Psychology", "to": "lobby", "width": 1}, {"color": "black", "from": "Psychology", "to": "peak hours", "width": 1}, {"color": "black", "from": "Psychology", "to": "flickering", "width": 1}, {"color": "black", "from": "Psychology", "to": "fluorescent", "width": 1}, {"color": "black", "from": "Psychology", "to": "highly contrasting", "width": 1}, {"color": "black", "from": "Psychology", "to": "color/texture", "width": 1}, {"color": "black", "from": "Psychology", "to": "brightness", "width": 1}, {"color": "black", "from": "Psychology", "to": "reverberation time", "width": 1}, {"color": "black", "from": "Psychology", "to": "escape possibilities", "width": 1}, {"color": "black", "from": "Psychology", "to": "spaciousness", "width": 1}, {"color": "black", "from": "Psychology", "to": "stimulus zones", "width": 1}, {"color": "black", "from": "Psychology", "to": "places of solitude/quiet", "width": 1}, {"color": "black", "from": "Psychology", "to": "automatic mechanism", "width": 1}, {"color": "black", "from": "Psychology", "to": "sensory room", "width": 1}, {"color": "black", "from": "Psychology", "to": "visual calm", "width": 1}, {"color": "black", "from": "Psychology", "to": "orderliness", "width": 1}, {"color": "black", "from": "Psychology", "to": "dimensions", "width": 1}, {"color": "black", "from": "Psychology", "to": "noise level", "width": 1}, {"color": "black", "from": "Psychology", "to": "crowdedness", "width": 1}, {"color": "black", "from": "Psychology", "to": "quality of life", "width": 1}, {"color": "black", "from": "Psychology", "to": "independence", "width": 1}, {"color": "black", "from": "Psychology", "to": "social participation", "width": 1}, {"color": "black", "from": "Psychology", "to": "well-being", "width": 1}, {"color": "black", "from": "Psychology", "to": "variety", "width": 1}, {"color": "black", "from": "Psychology", "to": "accessibility", "width": 1}, {"color": "black", "from": "Psychology", "to": "predictability", "width": 1}, {"color": "black", "from": "Psychology", "to": "interactivity", "width": 1}, {"color": "black", "from": "Psychology", "to": "homelike", "width": 1}, {"color": "black", "from": "Psychology", "to": "inclusivity", "width": 1}, {"color": "black", "from": "Psychology", "to": "homelike and robust materials", "width": 1}, {"color": "black", "from": "Psychology", "to": "personalizability", "width": 1}, {"color": "black", "from": "Psychology", "to": "comfort", "width": 1}, {"color": "black", "from": "Psychology", "to": "escape space", "width": 1}, {"color": "black", "from": "Psychology", "to": "ventilation", "width": 1}, {"color": "black", "from": "Psychology", "to": "indoor", "width": 1}, {"color": "black", "from": "Psychology", "to": "irregular joins", "width": 1}, {"color": "black", "from": "Psychology", "to": "features", "width": 1}, {"color": "black", "from": "Psychology", "to": "trash", "width": 1}, {"color": "black", "from": "Psychology", "to": "vendors", "width": 1}, {"color": "black", "from": "Psychology", "to": "roadside embellishment", "width": 1}, {"color": "black", "from": "Psychology", "to": "construction", "width": 1}, {"color": "black", "from": "Psychology", "to": "shelter", "width": 1}, {"color": "black", "from": "Psychology", "to": "train station", "width": 1}, {"color": "black", "from": "Psychology", "to": "priority seat placement", "width": 1}, {"color": "black", "from": "Psychology", "to": "audio messages", "width": 1}, {"color": "black", "from": "Psychology", "to": "schedules", "width": 1}, {"color": "black", "from": "Psychology", "to": "height to platform", "width": 1}, {"color": "black", "from": "Psychology", "to": "distance between platform and vehicle", "width": 1}, {"color": "black", "from": "Psychology", "to": "traffic safety", "width": 1}, {"color": "black", "from": "Psychology", "to": "crossing", "width": 1}, {"color": "black", "from": "Psychology", "to": "season", "width": 1}, {"color": "black", "from": "Psychology", "to": "rocks", "width": 1}, {"color": "black", "from": "Psychology", "to": "construction materials", "width": 1}, {"color": "black", "from": "Psychology", "to": "audio announcement", "width": 1}, {"color": "black", "from": "Psychology", "to": "traffic light", "width": 1}, {"color": "black", "from": "Psychology", "to": "condition (functional/not)", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

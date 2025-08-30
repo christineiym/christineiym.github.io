@@ -1,0 +1,456 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 80%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 80%;
+                 height: 750px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "%covid%", "label": "%covid%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "points of interest", "label": "points of interest", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "social", "label": "social", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "exercise", "label": "exercise", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "appointments", "label": "appointments", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shopping", "label": "shopping", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "green space", "label": "green space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "garden", "label": "garden", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tree", "label": "tree", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "street", "label": "street", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic", "label": "traffic", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "noise level", "label": "noise level", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "purpose", "label": "purpose", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "lanes", "label": "lanes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "speed limit", "label": "speed limit", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "structure", "label": "structure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sidewalk", "label": "sidewalk", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "median", "label": "median", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "simple juncture", "label": "simple juncture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "roundabout", "label": "roundabout", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "buffer zone between road and sidewalk", "label": "buffer zone between road and sidewalk", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "parking lot", "label": "parking lot", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "open time", "label": "open time", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "close time", "label": "close time", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "peak hours", "label": "peak hours", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public transportation", "label": "public transportation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "paratransit", "label": "paratransit", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "informational", "label": "informational", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "safety", "label": "safety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "acoustics", "label": "acoustics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "temperature", "label": "temperature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "lighting", "label": "lighting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "window", "label": "window", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "connectivity", "label": "connectivity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crowdedness", "label": "crowdedness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "air quality", "label": "air quality", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "size", "label": "size", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "building type", "label": "building type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "balcony", "label": "balcony", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "outdoor communal area", "label": "outdoor communal area", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "workspace", "label": "workspace", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "physical activity space", "label": "physical activity space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "setting", "label": "setting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "neighborhood type", "label": "neighborhood type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "town", "label": "town", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "suburb", "label": "suburb", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "rural", "label": "rural", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "urban", "label": "urban", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stairs", "label": "stairs", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic light", "label": "traffic light", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "construction", "label": "construction", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bus station", "label": "bus station", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "door", "label": "door", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "scaffolding", "label": "scaffolding", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cones", "label": "cones", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "post", "label": "post", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ladder", "label": "ladder", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cone", "label": "cone", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tree branch", "label": "tree branch", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "open window", "label": "open window", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pothole", "label": "pothole", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ditch", "label": "ditch", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "transparent objects", "label": "transparent objects", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "dampness/wetness", "label": "dampness/wetness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "wall", "label": "wall", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "hole to lower floor", "label": "hole to lower floor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "curb cut", "label": "curb cut", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slope", "label": "slope", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "material", "label": "material", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "width", "label": "width", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "handrails", "label": "handrails", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flight width", "label": "flight width", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "resting places", "label": "resting places", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "handrail", "label": "handrail", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "landing", "label": "landing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "toilet backseat", "label": "toilet backseat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "visual calm", "label": "visual calm", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "homelike and robust materials", "label": "homelike and robust materials", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "predictability", "label": "predictability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "carpet pattern", "label": "carpet pattern", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "good acoustics", "label": "good acoustics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stimulus zones", "label": "stimulus zones", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "workplace", "label": "workplace", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "height", "label": "height", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "table", "label": "table", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "biophilic design", "label": "biophilic design", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "glare", "label": "glare", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "warmer light", "label": "warmer light", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "places of solitude/quiet", "label": "places of solitude/quiet", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crossing", "label": "crossing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ease of opening", "label": "ease of opening", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "intersection", "label": "intersection", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "car", "label": "car", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "signal status", "label": "signal status", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic status", "label": "traffic status", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "potential aerial obstacle", "label": "potential aerial obstacle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "puddle", "label": "puddle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic sign", "label": "traffic sign", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "path", "label": "path", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "trash", "label": "trash", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "condition", "label": "condition", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "gutter", "label": "gutter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "maintenance", "label": "maintenance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "features", "label": "features", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "mailbox", "label": "mailbox", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "elevator", "label": "elevator", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ramp", "label": "ramp", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "signs/informational aids", "label": "signs/informational aids", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "utility objects", "label": "utility objects", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shorelines", "label": "shorelines", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile markings for platform edge", "label": "tactile markings for platform edge", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "marking", "label": "marking", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "speed bump", "label": "speed bump", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "regularity", "label": "regularity", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "environmental factors", "label": "environmental factors", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "height from platform", "label": "height from platform", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bus type", "label": "bus type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "taxi", "label": "taxi", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "rickshaw", "label": "rickshaw", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ridesharing", "label": "ridesharing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bright", "label": "bright", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "on-street parking", "label": "on-street parking", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "landmark", "label": "landmark", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "low light", "label": "low light", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cleaning/maintenance schedule (especially with loud equipment)", "label": "cleaning/maintenance schedule (especially with loud equipment)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "timing", "label": "timing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "proximity to pedestrian generators or attractors", "label": "proximity to pedestrian generators or attractors", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fluorescent", "label": "fluorescent", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "zebra", "label": "zebra", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "road type", "label": "road type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pedestrian conventions", "label": "pedestrian conventions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sensory garden", "label": "sensory garden", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public", "label": "public", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pocket", "label": "pocket", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "street furniture", "label": "street furniture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "\"accessible seating\"", "label": "\"accessible seating\"", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ASL translation", "label": "ASL translation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "closed captioning", "label": "closed captioning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "hazard", "label": "hazard", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "multimodal", "label": "multimodal", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crosswalk", "label": "crosswalk", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "frontage", "label": "frontage", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "entrance", "label": "entrance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "exit", "label": "exit", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "furniture", "label": "furniture", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room boundaries", "label": "room boundaries", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fence", "label": "fence", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "transparency", "label": "transparency", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bench", "label": "bench", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "food", "label": "food", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "bicycle", "label": "bicycle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "slope/grade", "label": "slope/grade", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "crack", "label": "crack", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pebble", "label": "pebble", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "orderliness", "label": "orderliness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "traffic safety", "label": "traffic safety", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "park", "label": "park", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "healthcare", "label": "healthcare", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "entertainment", "label": "entertainment", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "graffiti", "label": "graffiti", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "litter noise", "label": "litter noise", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "vacant building", "label": "vacant building", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "stressor", "label": "stressor", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "aesthetics", "label": "aesthetics", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "walking infrastructure", "label": "walking infrastructure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cycling infrastructure", "label": "cycling infrastructure", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "land use", "label": "land use", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "population density", "label": "population density", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "nature", "label": "nature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "community center", "label": "community center", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "recreation", "label": "recreation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "barber", "label": "barber", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "institutional", "label": "institutional", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "library", "label": "library", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "religious", "label": "religious", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "education", "label": "education", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "dimensions", "label": "dimensions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "entrance ramp", "label": "entrance ramp", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "restroom", "label": "restroom", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flexibility in floor planning", "label": "flexibility in floor planning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "noise", "label": "noise", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "background noise levels", "label": "background noise levels", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "interior planning", "label": "interior planning", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room temperature control", "label": "room temperature control", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ventilation performance", "label": "ventilation performance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "room temperature", "label": "room temperature", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shower", "label": "shower", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "toilet", "label": "toilet", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "fittings", "label": "fittings", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "finishes", "label": "finishes", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "privacy", "label": "privacy", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "technology access", "label": "technology access", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "housing", "label": "housing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "localized working spaces", "label": "localized working spaces", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "co-work hub space", "label": "co-work hub space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "start-up incubator facility", "label": "start-up incubator facility", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cafe", "label": "cafe", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "public outdoor space", "label": "public outdoor space", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "physical", "label": "physical", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "car parking", "label": "car parking", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cluster", "label": "cluster", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cleanliness", "label": "cleanliness", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "land use mix", "label": "land use mix", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "housing density", "label": "housing density", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "employment density", "label": "employment density", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "passenger drop point", "label": "passenger drop point", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shelter", "label": "shelter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "accessibility", "label": "accessibility", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "microtransit", "label": "microtransit", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "autonomous vehicle", "label": "autonomous vehicle", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "assistance", "label": "assistance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flooring type", "label": "flooring type", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor mat", "label": "floor mat", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "museum object", "label": "museum object", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile object", "label": "tactile object", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "3D print", "label": "3D print", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cast", "label": "cast", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "replica", "label": "replica", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "audio descriptions", "label": "audio descriptions", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "touch tours", "label": "touch tours", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "guided tours", "label": "guided tours", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "large print guides", "label": "large print guides", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tactile drawings", "label": "tactile drawings", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "social distancing", "label": "social distancing", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "%remote work%", "label": "%remote work%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "%-conferencing%", "label": "%-conferencing%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "%in-person%", "label": "%in-person%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "%social distanc%", "label": "%social distanc%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "%masking%", "label": "%masking%", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "pedestrian", "label": "pedestrian", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "signals", "label": "signals", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "precipitation", "label": "precipitation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "extreme weather events", "label": "extreme weather events", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "vegetation", "label": "vegetation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "tree cover", "label": "tree cover", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "permeability", "label": "permeability", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "emergency shelter", "label": "emergency shelter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "cooling", "label": "cooling", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "\u0027accessible\u0027", "label": "\u0027accessible\u0027", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "medical supplies available", "label": "medical supplies available", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "emergency lighting", "label": "emergency lighting", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ease of usage", "label": "ease of usage", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ability to open", "label": "ability to open", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shading device", "label": "shading device", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "planter", "label": "planter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "grassline", "label": "grassline", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "brickline", "label": "brickline", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "sidewalk edges", "label": "sidewalk edges", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "walls", "label": "walls", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "building line", "label": "building line", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "automatic mechanism", "label": "automatic mechanism", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "shelf", "label": "shelf", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "counter", "label": "counter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "hallway", "label": "hallway", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "floor material", "label": "floor material", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "security device", "label": "security device", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "booth", "label": "booth", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "distance", "label": "distance", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "schedules", "label": "schedules", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "service hours", "label": "service hours", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "frequency", "label": "frequency", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "transfers", "label": "transfers", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "city size (large/small)", "label": "city size (large/small)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "flexible transit delivery services", "label": "flexible transit delivery services", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"color": "red", "from": "%covid%", "to": "points of interest", "width": 1}, {"color": "red", "from": "%covid%", "to": "social", "width": 1}, {"color": "red", "from": "%covid%", "to": "exercise", "width": 1}, {"color": "red", "from": "%covid%", "to": "appointments", "width": 1}, {"color": "red", "from": "%covid%", "to": "shopping", "width": 1}, {"color": "red", "from": "%covid%", "to": "green space", "width": 1}, {"color": "red", "from": "%covid%", "to": "garden", "width": 1}, {"color": "red", "from": "%covid%", "to": "tree", "width": 1}, {"color": "red", "from": "%covid%", "to": "street", "width": 1}, {"color": "red", "from": "%covid%", "to": "traffic", "width": 1}, {"color": "red", "from": "%covid%", "to": "noise level", "width": 1}, {"color": "red", "from": "%covid%", "to": "purpose", "width": 1}, {"color": "red", "from": "%covid%", "to": "lanes", "width": 1}, {"color": "red", "from": "%covid%", "to": "speed limit", "width": 1}, {"color": "red", "from": "%covid%", "to": "structure", "width": 1}, {"color": "red", "from": "%covid%", "to": "sidewalk", "width": 1}, {"color": "red", "from": "%covid%", "to": "median", "width": 1}, {"color": "red", "from": "%covid%", "to": "simple juncture", "width": 1}, {"color": "red", "from": "%covid%", "to": "roundabout", "width": 1}, {"color": "red", "from": "%covid%", "to": "buffer zone between road and sidewalk", "width": 1}, {"color": "red", "from": "%covid%", "to": "parking lot", "width": 1}, {"color": "red", "from": "%covid%", "to": "open time", "width": 1}, {"color": "red", "from": "%covid%", "to": "close time", "width": 1}, {"color": "red", "from": "%covid%", "to": "peak hours", "width": 1}, {"color": "red", "from": "%covid%", "to": "public transportation", "width": 1}, {"color": "red", "from": "%covid%", "to": "paratransit", "width": 1}, {"color": "red", "from": "%covid%", "to": "informational", "width": 1}, {"color": "red", "from": "%covid%", "to": "safety", "width": 1}, {"color": "red", "from": "%covid%", "to": "acoustics", "width": 1}, {"color": "red", "from": "%covid%", "to": "temperature", "width": 1}, {"color": "red", "from": "%covid%", "to": "lighting", "width": 1}, {"color": "red", "from": "%covid%", "to": "window", "width": 1}, {"color": "red", "from": "%covid%", "to": "connectivity", "width": 1}, {"color": "red", "from": "%covid%", "to": "crowdedness", "width": 1}, {"color": "red", "from": "%covid%", "to": "air quality", "width": 1}, {"color": "red", "from": "%covid%", "to": "size", "width": 1}, {"color": "red", "from": "%covid%", "to": "building type", "width": 1}, {"color": "red", "from": "%covid%", "to": "balcony", "width": 1}, {"color": "red", "from": "%covid%", "to": "outdoor communal area", "width": 1}, {"color": "red", "from": "%covid%", "to": "workspace", "width": 1}, {"color": "red", "from": "%covid%", "to": "physical activity space", "width": 1}, {"color": "red", "from": "%covid%", "to": "setting", "width": 1}, {"color": "red", "from": "%covid%", "to": "neighborhood type", "width": 1}, {"color": "red", "from": "%covid%", "to": "town", "width": 1}, {"color": "red", "from": "%covid%", "to": "suburb", "width": 1}, {"color": "red", "from": "%covid%", "to": "rural", "width": 1}, {"color": "red", "from": "%covid%", "to": "urban", "width": 1}, {"color": "red", "from": "%covid%", "to": "stairs", "width": 1}, {"color": "red", "from": "%covid%", "to": "traffic light", "width": 1}, {"color": "red", "from": "%covid%", "to": "construction", "width": 1}, {"color": "red", "from": "%covid%", "to": "bus station", "width": 1}, {"color": "red", "from": "%covid%", "to": "door", "width": 1}, {"color": "red", "from": "%covid%", "to": "scaffolding", "width": 1}, {"color": "red", "from": "%covid%", "to": "cones", "width": 1}, {"color": "red", "from": "%covid%", "to": "post", "width": 1}, {"color": "red", "from": "%covid%", "to": "ladder", "width": 1}, {"color": "red", "from": "%covid%", "to": "cone", "width": 1}, {"color": "red", "from": "%covid%", "to": "tree branch", "width": 1}, {"color": "red", "from": "%covid%", "to": "open window", "width": 1}, {"color": "red", "from": "%covid%", "to": "pothole", "width": 1}, {"color": "red", "from": "%covid%", "to": "ditch", "width": 1}, {"color": "red", "from": "%covid%", "to": "transparent objects", "width": 1}, {"color": "red", "from": "%covid%", "to": "dampness/wetness", "width": 1}, {"color": "red", "from": "%covid%", "to": "wall", "width": 1}, {"color": "red", "from": "%covid%", "to": "hole to lower floor", "width": 1}, {"color": "red", "from": "%covid%", "to": "curb cut", "width": 1}, {"color": "red", "from": "%covid%", "to": "slope", "width": 1}, {"color": "red", "from": "%covid%", "to": "material", "width": 1}, {"color": "red", "from": "%covid%", "to": "width", "width": 1}, {"color": "red", "from": "%covid%", "to": "handrails", "width": 1}, {"color": "red", "from": "%covid%", "to": "flight width", "width": 1}, {"color": "red", "from": "%covid%", "to": "resting places", "width": 1}, {"color": "red", "from": "%covid%", "to": "handrail", "width": 1}, {"color": "red", "from": "%covid%", "to": "landing", "width": 1}, {"color": "red", "from": "%covid%", "to": "toilet backseat", "width": 1}, {"color": "red", "from": "%covid%", "to": "visual calm", "width": 1}, {"color": "red", "from": "%covid%", "to": "homelike and robust materials", "width": 1}, {"color": "red", "from": "%covid%", "to": "predictability", "width": 1}, {"color": "red", "from": "%covid%", "to": "carpet pattern", "width": 1}, {"color": "red", "from": "%covid%", "to": "good acoustics", "width": 1}, {"color": "red", "from": "%covid%", "to": "stimulus zones", "width": 1}, {"color": "red", "from": "%covid%", "to": "workplace", "width": 1}, {"color": "red", "from": "%covid%", "to": "height", "width": 1}, {"color": "red", "from": "%covid%", "to": "table", "width": 1}, {"color": "red", "from": "%covid%", "to": "biophilic design", "width": 1}, {"color": "red", "from": "%covid%", "to": "glare", "width": 1}, {"color": "red", "from": "%covid%", "to": "warmer light", "width": 1}, {"color": "red", "from": "%covid%", "to": "places of solitude/quiet", "width": 1}, {"color": "red", "from": "%covid%", "to": "crossing", "width": 1}, {"color": "red", "from": "%covid%", "to": "ease of opening", "width": 1}, {"color": "red", "from": "%covid%", "to": "intersection", "width": 1}, {"color": "red", "from": "%covid%", "to": "car", "width": 1}, {"color": "red", "from": "%covid%", "to": "signal status", "width": 1}, {"color": "red", "from": "%covid%", "to": "traffic status", "width": 1}, {"color": "red", "from": "%covid%", "to": "potential aerial obstacle", "width": 1}, {"color": "red", "from": "%covid%", "to": "puddle", "width": 1}, {"color": "red", "from": "%covid%", "to": "traffic sign", "width": 1}, {"color": "red", "from": "%covid%", "to": "path", "width": 1}, {"color": "red", "from": "%covid%", "to": "trash", "width": 1}, {"color": "red", "from": "%covid%", "to": "condition", "width": 1}, {"color": "red", "from": "%covid%", "to": "gutter", "width": 1}, {"color": "red", "from": "%covid%", "to": "maintenance", "width": 1}, {"color": "red", "from": "%covid%", "to": "features", "width": 1}, {"color": "red", "from": "%covid%", "to": "mailbox", "width": 1}, {"color": "red", "from": "%covid%", "to": "elevator", "width": 1}, {"color": "red", "from": "%covid%", "to": "ramp", "width": 1}, {"color": "red", "from": "%covid%", "to": "signs/informational aids", "width": 1}, {"color": "red", "from": "%covid%", "to": "utility objects", "width": 1}, {"color": "red", "from": "%covid%", "to": "shorelines", "width": 1}, {"color": "red", "from": "%covid%", "to": "tactile markings for platform edge", "width": 1}, {"color": "red", "from": "%covid%", "to": "marking", "width": 1}, {"color": "red", "from": "%covid%", "to": "speed bump", "width": 1}, {"color": "red", "from": "%covid%", "to": "regularity", "width": 1}, {"color": "red", "from": "%covid%", "to": "environmental factors", "width": 1}, {"color": "red", "from": "%covid%", "to": "height from platform", "width": 1}, {"color": "red", "from": "%covid%", "to": "bus type", "width": 1}, {"color": "red", "from": "%covid%", "to": "taxi", "width": 1}, {"color": "red", "from": "%covid%", "to": "rickshaw", "width": 1}, {"color": "red", "from": "%covid%", "to": "ridesharing", "width": 1}, {"color": "red", "from": "%covid%", "to": "bright", "width": 1}, {"color": "red", "from": "%covid%", "to": "on-street parking", "width": 1}, {"color": "red", "from": "%covid%", "to": "landmark", "width": 1}, {"color": "red", "from": "%covid%", "to": "low light", "width": 1}, {"color": "red", "from": "%covid%", "to": "cleaning/maintenance schedule (especially with loud equipment)", "width": 1}, {"color": "red", "from": "%covid%", "to": "timing", "width": 1}, {"color": "red", "from": "%covid%", "to": "proximity to pedestrian generators or attractors", "width": 1}, {"color": "red", "from": "%covid%", "to": "fluorescent", "width": 1}, {"color": "red", "from": "%covid%", "to": "zebra", "width": 1}, {"color": "red", "from": "%covid%", "to": "road type", "width": 1}, {"color": "red", "from": "%covid%", "to": "pedestrian conventions", "width": 1}, {"color": "red", "from": "%covid%", "to": "sensory garden", "width": 1}, {"color": "red", "from": "%covid%", "to": "public", "width": 1}, {"color": "red", "from": "%covid%", "to": "pocket", "width": 1}, {"color": "red", "from": "%covid%", "to": "street furniture", "width": 1}, {"color": "red", "from": "%covid%", "to": "\"accessible seating\"", "width": 1}, {"color": "red", "from": "%covid%", "to": "ASL translation", "width": 1}, {"color": "red", "from": "%covid%", "to": "closed captioning", "width": 1}, {"color": "red", "from": "%covid%", "to": "hazard", "width": 1}, {"color": "red", "from": "%covid%", "to": "multimodal", "width": 1}, {"color": "red", "from": "%covid%", "to": "crosswalk", "width": 1}, {"color": "red", "from": "%covid%", "to": "frontage", "width": 1}, {"color": "red", "from": "%covid%", "to": "entrance", "width": 1}, {"color": "red", "from": "%covid%", "to": "exit", "width": 1}, {"color": "red", "from": "%covid%", "to": "furniture", "width": 1}, {"color": "red", "from": "%covid%", "to": "room boundaries", "width": 1}, {"color": "red", "from": "%covid%", "to": "fence", "width": 1}, {"color": "red", "from": "%covid%", "to": "transparency", "width": 1}, {"color": "red", "from": "%covid%", "to": "bench", "width": 1}, {"color": "red", "from": "%covid%", "to": "food", "width": 1}, {"color": "red", "from": "%covid%", "to": "bicycle", "width": 1}, {"color": "red", "from": "%covid%", "to": "slope/grade", "width": 1}, {"color": "red", "from": "%covid%", "to": "crack", "width": 1}, {"color": "red", "from": "%covid%", "to": "pebble", "width": 1}, {"color": "red", "from": "%covid%", "to": "orderliness", "width": 1}, {"color": "red", "from": "%covid%", "to": "traffic safety", "width": 1}, {"color": "red", "from": "%covid%", "to": "park", "width": 1}, {"color": "red", "from": "%covid%", "to": "healthcare", "width": 1}, {"color": "red", "from": "%covid%", "to": "entertainment", "width": 1}, {"color": "red", "from": "%covid%", "to": "graffiti", "width": 1}, {"color": "red", "from": "%covid%", "to": "litter noise", "width": 1}, {"color": "red", "from": "%covid%", "to": "vacant building", "width": 1}, {"color": "red", "from": "%covid%", "to": "stressor", "width": 1}, {"color": "red", "from": "%covid%", "to": "aesthetics", "width": 1}, {"color": "red", "from": "%covid%", "to": "walking infrastructure", "width": 1}, {"color": "red", "from": "%covid%", "to": "cycling infrastructure", "width": 1}, {"color": "red", "from": "%covid%", "to": "land use", "width": 1}, {"color": "red", "from": "%covid%", "to": "population density", "width": 1}, {"color": "red", "from": "%covid%", "to": "nature", "width": 1}, {"color": "red", "from": "%covid%", "to": "community center", "width": 1}, {"color": "red", "from": "%covid%", "to": "recreation", "width": 1}, {"color": "red", "from": "%covid%", "to": "barber", "width": 1}, {"color": "red", "from": "%covid%", "to": "institutional", "width": 1}, {"color": "red", "from": "%covid%", "to": "library", "width": 1}, {"color": "red", "from": "%covid%", "to": "religious", "width": 1}, {"color": "red", "from": "%covid%", "to": "education", "width": 1}, {"color": "red", "from": "%covid%", "to": "dimensions", "width": 1}, {"color": "red", "from": "%covid%", "to": "entrance ramp", "width": 1}, {"color": "red", "from": "%covid%", "to": "restroom", "width": 1}, {"color": "red", "from": "%covid%", "to": "flexibility in floor planning", "width": 1}, {"color": "red", "from": "%covid%", "to": "noise", "width": 1}, {"color": "red", "from": "%covid%", "to": "background noise levels", "width": 1}, {"color": "red", "from": "%covid%", "to": "interior planning", "width": 1}, {"color": "red", "from": "%covid%", "to": "room temperature control", "width": 1}, {"color": "red", "from": "%covid%", "to": "ventilation performance", "width": 1}, {"color": "red", "from": "%covid%", "to": "room temperature", "width": 1}, {"color": "red", "from": "%covid%", "to": "shower", "width": 1}, {"color": "red", "from": "%covid%", "to": "toilet", "width": 1}, {"color": "red", "from": "%covid%", "to": "fittings", "width": 1}, {"color": "red", "from": "%covid%", "to": "finishes", "width": 1}, {"color": "red", "from": "%covid%", "to": "privacy", "width": 1}, {"color": "red", "from": "%covid%", "to": "technology access", "width": 1}, {"color": "red", "from": "%covid%", "to": "housing", "width": 1}, {"color": "red", "from": "%covid%", "to": "localized working spaces", "width": 1}, {"color": "red", "from": "%covid%", "to": "co-work hub space", "width": 1}, {"color": "red", "from": "%covid%", "to": "start-up incubator facility", "width": 1}, {"color": "red", "from": "%covid%", "to": "cafe", "width": 1}, {"color": "red", "from": "%covid%", "to": "public outdoor space", "width": 1}, {"color": "red", "from": "%covid%", "to": "physical", "width": 1}, {"color": "red", "from": "%covid%", "to": "car parking", "width": 1}, {"color": "red", "from": "%covid%", "to": "cluster", "width": 1}, {"color": "red", "from": "%covid%", "to": "cleanliness", "width": 1}, {"color": "red", "from": "%covid%", "to": "land use mix", "width": 1}, {"color": "red", "from": "%covid%", "to": "housing density", "width": 1}, {"color": "red", "from": "%covid%", "to": "employment density", "width": 1}, {"color": "red", "from": "%covid%", "to": "passenger drop point", "width": 1}, {"color": "red", "from": "%covid%", "to": "shelter", "width": 1}, {"color": "red", "from": "%covid%", "to": "accessibility", "width": 1}, {"color": "red", "from": "%covid%", "to": "microtransit", "width": 1}, {"color": "red", "from": "%covid%", "to": "autonomous vehicle", "width": 1}, {"color": "red", "from": "%covid%", "to": "assistance", "width": 1}, {"color": "red", "from": "%covid%", "to": "flooring type", "width": 1}, {"color": "red", "from": "%covid%", "to": "floor mat", "width": 1}, {"color": "red", "from": "%covid%", "to": "museum object", "width": 1}, {"color": "red", "from": "%covid%", "to": "tactile object", "width": 1}, {"color": "red", "from": "%covid%", "to": "3D print", "width": 1}, {"color": "red", "from": "%covid%", "to": "cast", "width": 1}, {"color": "red", "from": "%covid%", "to": "replica", "width": 1}, {"color": "red", "from": "%covid%", "to": "audio descriptions", "width": 1}, {"color": "red", "from": "%covid%", "to": "touch tours", "width": 1}, {"color": "red", "from": "%covid%", "to": "guided tours", "width": 1}, {"color": "red", "from": "%covid%", "to": "large print guides", "width": 1}, {"color": "red", "from": "%covid%", "to": "tactile drawings", "width": 1}, {"color": "red", "from": "%covid%", "to": "social distancing", "width": 1}, {"color": "green", "from": "social", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "social", "to": "%-conferencing%", "width": 1}, {"color": "blue", "from": "street", "to": "%in-person%", "width": 1}, {"color": "green", "from": "traffic", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "traffic", "to": "%in-person%", "width": 1}, {"color": "purple", "from": "traffic", "to": "%-conferencing%", "width": 1}, {"color": "orange", "from": "noise level", "to": "%social distanc%", "width": 1}, {"color": "blue", "from": "noise level", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "sidewalk", "to": "%in-person%", "width": 1}, {"color": "black", "from": "peak hours", "to": "%masking%", "width": 1}, {"color": "green", "from": "public transportation", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "public transportation", "to": "%in-person%", "width": 1}, {"color": "purple", "from": "public transportation", "to": "%-conferencing%", "width": 1}, {"color": "blue", "from": "paratransit", "to": "%in-person%", "width": 1}, {"color": "green", "from": "acoustics", "to": "%remote work%", "width": 1}, {"color": "black", "from": "acoustics", "to": "%masking%", "width": 1}, {"color": "green", "from": "temperature", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "temperature", "to": "%in-person%", "width": 1}, {"color": "black", "from": "temperature", "to": "%masking%", "width": 1}, {"color": "green", "from": "lighting", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "lighting", "to": "%in-person%", "width": 1}, {"color": "black", "from": "lighting", "to": "%masking%", "width": 1}, {"color": "green", "from": "window", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "window", "to": "%in-person%", "width": 1}, {"color": "black", "from": "window", "to": "%masking%", "width": 1}, {"color": "green", "from": "connectivity", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "connectivity", "to": "%in-person%", "width": 1}, {"color": "purple", "from": "connectivity", "to": "%-conferencing%", "width": 1}, {"color": "orange", "from": "crowdedness", "to": "%social distanc%", "width": 1}, {"color": "blue", "from": "crowdedness", "to": "%in-person%", "width": 1}, {"color": "black", "from": "crowdedness", "to": "%masking%", "width": 1}, {"color": "blue", "from": "air quality", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "setting", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "town", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "suburb", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "rural", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "urban", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "stairs", "to": "%in-person%", "width": 1}, {"color": "black", "from": "stairs", "to": "%masking%", "width": 1}, {"color": "black", "from": "traffic light", "to": "%masking%", "width": 1}, {"color": "blue", "from": "construction", "to": "%in-person%", "width": 1}, {"color": "black", "from": "construction", "to": "%masking%", "width": 1}, {"color": "blue", "from": "bus station", "to": "%in-person%", "width": 1}, {"color": "black", "from": "bus station", "to": "%masking%", "width": 1}, {"color": "blue", "from": "door", "to": "%in-person%", "width": 1}, {"color": "black", "from": "door", "to": "%masking%", "width": 1}, {"color": "black", "from": "scaffolding", "to": "%masking%", "width": 1}, {"color": "black", "from": "cones", "to": "%masking%", "width": 1}, {"color": "blue", "from": "post", "to": "%in-person%", "width": 1}, {"color": "black", "from": "post", "to": "%masking%", "width": 1}, {"color": "black", "from": "ladder", "to": "%masking%", "width": 1}, {"color": "black", "from": "cone", "to": "%masking%", "width": 1}, {"color": "black", "from": "tree branch", "to": "%masking%", "width": 1}, {"color": "black", "from": "open window", "to": "%masking%", "width": 1}, {"color": "blue", "from": "pothole", "to": "%in-person%", "width": 1}, {"color": "black", "from": "pothole", "to": "%masking%", "width": 1}, {"color": "black", "from": "ditch", "to": "%masking%", "width": 1}, {"color": "black", "from": "transparent objects", "to": "%masking%", "width": 1}, {"color": "black", "from": "dampness/wetness", "to": "%masking%", "width": 1}, {"color": "black", "from": "wall", "to": "%masking%", "width": 1}, {"color": "black", "from": "hole to lower floor", "to": "%masking%", "width": 1}, {"color": "blue", "from": "slope", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "width", "to": "%in-person%", "width": 1}, {"color": "green", "from": "visual calm", "to": "%remote work%", "width": 1}, {"color": "black", "from": "visual calm", "to": "%masking%", "width": 1}, {"color": "green", "from": "homelike and robust materials", "to": "%remote work%", "width": 1}, {"color": "black", "from": "homelike and robust materials", "to": "%masking%", "width": 1}, {"color": "green", "from": "predictability", "to": "%remote work%", "width": 1}, {"color": "black", "from": "predictability", "to": "%masking%", "width": 1}, {"color": "green", "from": "carpet pattern", "to": "%remote work%", "width": 1}, {"color": "black", "from": "carpet pattern", "to": "%masking%", "width": 1}, {"color": "green", "from": "good acoustics", "to": "%remote work%", "width": 1}, {"color": "black", "from": "good acoustics", "to": "%masking%", "width": 1}, {"color": "orange", "from": "stimulus zones", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "stimulus zones", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "stimulus zones", "to": "%in-person%", "width": 1}, {"color": "black", "from": "stimulus zones", "to": "%masking%", "width": 1}, {"color": "green", "from": "workplace", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "workplace", "to": "%-conferencing%", "width": 1}, {"color": "black", "from": "workplace", "to": "%masking%", "width": 1}, {"color": "green", "from": "height", "to": "%remote work%", "width": 1}, {"color": "black", "from": "height", "to": "%masking%", "width": 1}, {"color": "green", "from": "table", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "table", "to": "%in-person%", "width": 1}, {"color": "black", "from": "table", "to": "%masking%", "width": 1}, {"color": "green", "from": "biophilic design", "to": "%remote work%", "width": 1}, {"color": "black", "from": "biophilic design", "to": "%masking%", "width": 1}, {"color": "green", "from": "glare", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "glare", "to": "%-conferencing%", "width": 1}, {"color": "black", "from": "glare", "to": "%masking%", "width": 1}, {"color": "green", "from": "warmer light", "to": "%remote work%", "width": 1}, {"color": "black", "from": "warmer light", "to": "%masking%", "width": 1}, {"color": "green", "from": "places of solitude/quiet", "to": "%remote work%", "width": 1}, {"color": "black", "from": "places of solitude/quiet", "to": "%masking%", "width": 1}, {"color": "blue", "from": "crossing", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "intersection", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "traffic status", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "traffic sign", "to": "%social distanc%", "width": 1}, {"color": "blue", "from": "path", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "trash", "to": "%in-person%", "width": 1}, {"color": "green", "from": "condition", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "condition", "to": "%in-person%", "width": 1}, {"color": "purple", "from": "condition", "to": "%-conferencing%", "width": 1}, {"color": "blue", "from": "gutter", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "maintenance", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "features", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "mailbox", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "elevator", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "ramp", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "signs/informational aids", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "utility objects", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "shorelines", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "tactile markings for platform edge", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "marking", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "speed bump", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "regularity", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "environmental factors", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "height from platform", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "bus type", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "taxi", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "rickshaw", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "ridesharing", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "bright", "to": "%social distanc%", "width": 1}, {"color": "blue", "from": "bright", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "landmark", "to": "%social distanc%", "width": 1}, {"color": "blue", "from": "crosswalk", "to": "%in-person%", "width": 1}, {"color": "green", "from": "entrance", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "entrance", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "room boundaries", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "room boundaries", "to": "%-conferencing%", "width": 1}, {"color": "blue", "from": "slope/grade", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "healthcare", "to": "%in-person%", "width": 1}, {"color": "green", "from": "land use", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "land use", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "library", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "library", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "entrance ramp", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "entrance ramp", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "restroom", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "restroom", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "flexibility in floor planning", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "flexibility in floor planning", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "noise", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "noise", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "background noise levels", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "background noise levels", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "interior planning", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "interior planning", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "room temperature control", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "room temperature control", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "ventilation performance", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "ventilation performance", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "room temperature", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "room temperature", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "shower", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "shower", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "toilet", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "toilet", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "fittings", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "fittings", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "finishes", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "finishes", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "privacy", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "privacy", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "technology access", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "technology access", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "housing", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "housing", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "localized working spaces", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "localized working spaces", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "co-work hub space", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "co-work hub space", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "start-up incubator facility", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "start-up incubator facility", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "cafe", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "cafe", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "public outdoor space", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "public outdoor space", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "physical", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "physical", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "car parking", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "car parking", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "cluster", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "cluster", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "cleanliness", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "cleanliness", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "land use mix", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "land use mix", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "housing density", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "housing density", "to": "%-conferencing%", "width": 1}, {"color": "green", "from": "employment density", "to": "%remote work%", "width": 1}, {"color": "purple", "from": "employment density", "to": "%-conferencing%", "width": 1}, {"color": "blue", "from": "passenger drop point", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "shelter", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "accessibility", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "microtransit", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "autonomous vehicle", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "assistance", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "flooring type", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "floor mat", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "museum object", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "museum object", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "museum object", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "tactile object", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "tactile object", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "tactile object", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "3D print", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "3D print", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "3D print", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "cast", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "cast", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "cast", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "replica", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "replica", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "replica", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "audio descriptions", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "audio descriptions", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "audio descriptions", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "touch tours", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "touch tours", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "touch tours", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "guided tours", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "guided tours", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "guided tours", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "large print guides", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "large print guides", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "large print guides", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "tactile drawings", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "tactile drawings", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "tactile drawings", "to": "%in-person%", "width": 1}, {"color": "orange", "from": "social distancing", "to": "%social distanc%", "width": 1}, {"color": "green", "from": "social distancing", "to": "%remote work%", "width": 1}, {"color": "blue", "from": "social distancing", "to": "%in-person%", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "pedestrian", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "signals", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "precipitation", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "extreme weather events", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "vegetation", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "tree cover", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "permeability", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "emergency shelter", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "cooling", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "\u0027accessible\u0027", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "medical supplies available", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "emergency lighting", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "ease of usage", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "ability to open", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "shading device", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "planter", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "grassline", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "brickline", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "sidewalk edges", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "walls", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "building line", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "automatic mechanism", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "shelf", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "counter", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "hallway", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "floor material", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "security device", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "booth", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "distance", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "schedules", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "service hours", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "frequency", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "transfers", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "city size (large/small)", "width": 1}, {"color": "blue", "from": "%in-person%", "to": "flexible transit delivery services", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
