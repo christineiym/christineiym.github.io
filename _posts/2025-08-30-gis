@@ -11,5 +11,5 @@ toc:
 ---
 
 ## Test HTML files
-link1({% include preprepared_html/covid.html %})
-link2({% include covid.html %})
+[link1]({% include preprepared_html/covid.html %})
+[link2]({% include covid.html %})
